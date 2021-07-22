@@ -52,6 +52,7 @@ class PlayState extends MusicBeatState
 	public static var storyWeek:Int = 0;
 	public static var storyPlaylist:Array<String> = [];
 	public static var storyDifficulty:Int = 1;
+	public static var isPaused:Bool = false;
 
 	var halloweenLevel:Bool = false;
 
@@ -134,6 +135,7 @@ class PlayState extends MusicBeatState
 	var inCutscene:Bool = false;
 
 	var timerLeft:Float = 0;
+	var curLight:Int = 0;
 
 	#if desktop
 	// Discord RPC variables
@@ -224,9 +226,9 @@ class PlayState extends MusicBeatState
 
 		switch (SONG.song.toLowerCase())
 		{
-                        case 'spookeez' | 'monster' | 'south': 
-                        {
-                                curStage = 'spooky';
+            case 'spookeez' | 'monster' | 'south': 
+            {
+                            curStage = 'spooky';
 	                          halloweenLevel = true;
 
 		                  var hallowTex = Paths.getSparrowAtlas('halloween_bg');
@@ -240,10 +242,10 @@ class PlayState extends MusicBeatState
 	                          add(halloweenBG);
 
 		                  isHalloween = true;
-		          }
-		          case 'pico' | 'blammed' | 'philly': 
-                        {
-		                  curStage = 'philly';
+		        }
+		        case 'pico' | 'blammed' | 'philly': 
+                {
+		            curStage = 'philly';
 
 		                  var bg:FlxSprite = new FlxSprite(-100).loadGraphic(Paths.image('philly/sky'));
 		                  bg.scrollFactor.set(0.1, 0.1);
@@ -615,11 +617,11 @@ class PlayState extends MusicBeatState
 			case 'senpai':
 				dad.x += 150;
 				dad.y += 360;
-				camPos.set(dad.getGraphicMidpoint().x + 300, dad.getGraphicMidpoint().y);
+				camPos.set(dad.getGraphicMidpoint().x + 310, dad.getGraphicMidpoint().y);
 			case 'senpai-angry':
 				dad.x += 150;
 				dad.y += 360;
-				camPos.set(dad.getGraphicMidpoint().x + 300, dad.getGraphicMidpoint().y);
+				camPos.set(dad.getGraphicMidpoint().x + 310, dad.getGraphicMidpoint().y);
 			case 'spirit':
 				dad.x -= 150;
 				dad.y += 100;
@@ -703,7 +705,7 @@ class PlayState extends MusicBeatState
 
 		camFollow = new FlxObject(0, 0, 1, 1);
 
-		camFollow.setPosition(camPos.x, camPos.y);
+		camFollow.setPosition(gf.getGraphicMidpoint().x, gf.getGraphicMidpoint().y - 15);
 
 		if (prevCamFollow != null)
 		{
@@ -944,15 +946,17 @@ class PlayState extends MusicBeatState
 				if (value == curStage)
 				{
 					introAlts = introAssets.get(value);
-					altSuffix = '-pixel';
 				}
 			}
+
+			if (curStage.startsWith('school'))
+				altSuffix = '-pixel';
 
 			switch (swagCounter)
 
 			{
 				case 0:
-					FlxG.sound.play(Paths.sound('intro3'), 0.6);
+					FlxG.sound.play(Paths.sound('intro3' + altSuffix), 0.6);
 				case 1:
 					var ready:FlxSprite = new FlxSprite().loadGraphic(Paths.image(introAlts[0]));
 					ready.scrollFactor.set();
@@ -970,7 +974,7 @@ class PlayState extends MusicBeatState
 							ready.destroy();
 						}
 					});
-					FlxG.sound.play(Paths.sound('intro2'), 0.6);
+					FlxG.sound.play(Paths.sound('intro2' + altSuffix), 0.6);
 				case 2:
 					var set:FlxSprite = new FlxSprite().loadGraphic(Paths.image(introAlts[1]));
 					set.scrollFactor.set();
@@ -987,7 +991,7 @@ class PlayState extends MusicBeatState
 							set.destroy();
 						}
 					});
-					FlxG.sound.play(Paths.sound('intro1'), 0.6);
+					FlxG.sound.play(Paths.sound('intro1' + altSuffix), 0.6);
 				case 3:
 					var go:FlxSprite = new FlxSprite().loadGraphic(Paths.image(introAlts[2]));
 					go.scrollFactor.set();
@@ -1006,7 +1010,7 @@ class PlayState extends MusicBeatState
 							go.destroy();
 						}
 					});
-					FlxG.sound.play(Paths.sound('introGo'), 0.6);
+					FlxG.sound.play(Paths.sound('introGo' + altSuffix), 0.6);
 				case 4:
 			}
 
@@ -1357,7 +1361,7 @@ class PlayState extends MusicBeatState
 	}
 	
 	override public function onFocusLost():Void
-	{
+	{	
 		#if desktop
 		if (health > 0 && !paused)
 		{
@@ -1365,7 +1369,8 @@ class PlayState extends MusicBeatState
 		}
 		#end
 
-		if (startedCountdown && canPause)
+		// use an isPaused bool but not somewhere else :)
+		if (startedCountdown && canPause && !isPaused)
 			{
 				persistentUpdate = false;
 				persistentDraw = true;
@@ -1425,7 +1430,7 @@ class PlayState extends MusicBeatState
 						trainFrameTiming = 0;
 					}
 				}
-				// phillyCityLights.members[curLight].alpha -= (Conductor.crochet / 1000) * FlxG.elapsed;
+				phillyCityLights.members[curLight].alpha -= ((Conductor.crochet / 1000) * FlxG.elapsed) * 1.2;
 		}
 
 		super.update(elapsed);
@@ -1438,6 +1443,7 @@ class PlayState extends MusicBeatState
 			persistentDraw = true;
 			paused = true;
 
+			isPaused = true;
 			openSubState(new PauseSubState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
 		
 			#if desktop
@@ -1535,14 +1541,18 @@ class PlayState extends MusicBeatState
 
 				switch (dad.curCharacter)
 				{
+					case 'spooky':
+						camFollow.y = boyfriend.getMidpoint().y - 140;
+					case 'pico':
+						camFollow.y = boyfriend.getMidpoint().y - 160;
 					case 'mom':
 						camFollow.y = dad.getMidpoint().y;
 					case 'senpai':
 						camFollow.y = dad.getMidpoint().y - 430;
-						camFollow.x = dad.getMidpoint().x - 100;
+						camFollow.x = dad.getMidpoint().x - 90;
 					case 'senpai-angry':
 						camFollow.y = dad.getMidpoint().y - 430;
-						camFollow.x = dad.getMidpoint().x - 100;
+						camFollow.x = dad.getMidpoint().x - 90;
 				}
 
 				if (dad.curCharacter == 'mom')
@@ -1562,6 +1572,8 @@ class PlayState extends MusicBeatState
 				{
 					case 'spooky':
 						camFollow.y = boyfriend.getMidpoint().y - 140;
+					case 'philly':
+						camFollow.y = boyfriend.getMidpoint().y - 160;
 					case 'limo':
 						camFollow.x = boyfriend.getMidpoint().x - 300;
 					case 'mall':
@@ -2525,6 +2537,14 @@ class PlayState extends MusicBeatState
 			dad.playAnim('cheer', true);
 		}
 
+		if (curBeat == 47 && curSong == 'Bopeebo')
+		{
+			new FlxTimer().start(0.3, function(tmr:FlxTimer)
+			{
+				boyfriend.playAnim('hey', true);
+			});
+		}
+
 		switch (curStage)
 		{
 			case 'school':
@@ -2557,7 +2577,7 @@ class PlayState extends MusicBeatState
 					curLight = FlxG.random.int(0, phillyCityLights.length - 1);
 
 					phillyCityLights.members[curLight].visible = true;
-					// phillyCityLights.members[curLight].alpha = 1;
+					phillyCityLights.members[curLight].alpha = 1;
 				}
 
 				if (curBeat % 8 == 4 && FlxG.random.bool(30) && !trainMoving && trainCooldown > 8)
@@ -2572,6 +2592,4 @@ class PlayState extends MusicBeatState
 			lightningStrikeShit();
 		}
 	}
-
-	var curLight:Int = 0;
 }
