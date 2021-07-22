@@ -120,6 +120,7 @@ class ChartingState extends MusicBeatState
 				needsVoices: true,
 				player1: 'bf',
 				player2: 'dad',
+				gf: 'gf',
 				speed: 1,
 				validScore: false
 			};
@@ -536,7 +537,14 @@ class ChartingState extends MusicBeatState
 		{
 			dummyArrow.x = Math.floor(FlxG.mouse.x / GRID_SIZE) * GRID_SIZE;
 			if (FlxG.keys.pressed.SHIFT)
-				dummyArrow.y = FlxG.mouse.y;
+			{				
+				if (FlxG.keys.pressed.CONTROL)
+					dummyArrow.y = Math.floor(FlxG.mouse.y / (GRID_SIZE / 4)) * (GRID_SIZE / 4);
+				else
+					dummyArrow.y = FlxG.mouse.y;
+
+				trace(dummyArrow.y);
+			}
 			else
 				dummyArrow.y = Math.floor(FlxG.mouse.y / GRID_SIZE) * GRID_SIZE;
 		}
@@ -951,7 +959,7 @@ class ChartingState extends MusicBeatState
 
 		curSelectedNote = _song.notes[curSection].sectionNotes[_song.notes[curSection].sectionNotes.length - 1];
 
-		if (FlxG.keys.pressed.CONTROL)
+		if (FlxG.keys.pressed.ONE)
 		{
 			_song.notes[curSection].sectionNotes.push([noteStrum, (noteData + 4) % 8, noteSus]);
 		}
