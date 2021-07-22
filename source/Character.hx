@@ -16,6 +16,13 @@ class Character extends FlxSprite
 	public var curCharacter:String = 'bf';
 
 	public var holdTimer:Float = 0;
+	/*
+	* the countFrames() function is fairly easy to use, so for example, you want to use an indice frames that starts
+	* from 15 to 28, then you must do "countFrames(15, 28)";
+	* It is fairly easier than [15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28].
+	* There are some cases that has [30, 15, 16, 17, 18];
+	* You can do "countFrames(15, 18, 30);"
+	**/
 
 	public function new(x:Float, y:Float, ?character:String = "bf", ?isPlayer:Bool = false)
 	{
@@ -98,7 +105,7 @@ class Character extends FlxSprite
 				frames = tex;
 				animation.addByIndices('singUP', 'GF Dancing Beat Hair blowing CAR', [0], "", 24, false);
 				animation.addByIndices('danceLeft', 'GF Dancing Beat Hair blowing CAR', countFrames(0, 14, 30), "", 24, false);
-				animation.addByIndices('danceRight', 'GF Dancing Beat Hair blowing CAR', countFrames(0, 15, 29), "", 24,
+				animation.addByIndices('danceRight', 'GF Dancing Beat Hair blowing CAR', countFrames(15, 29), "", 24,
 					false);
 
 				addOffset('danceLeft', 0);
