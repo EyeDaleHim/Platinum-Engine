@@ -33,6 +33,7 @@ using StringTools;
 class TitleState extends MusicBeatState
 {
 	static var initialized:Bool = false;
+	var coolBool:Bool = false;
 
 	var blackScreen:FlxSprite;
 	var credGroup:FlxGroup;
@@ -138,7 +139,8 @@ class TitleState extends MusicBeatState
 		add(bg);
 
 		logoBl = new FlxSprite(-150, -100);
-		logoBl.frames = Paths.getSparrowAtlas('logoBumpin');
+		logoBl.frames = FlxAtlasFrames.fromSparrow('platinumlogo/Platinum_Logo_Bumpin.png', 'platinumlogo/Platinum_Logo_Bumpin.xml');
+		// logoBl.frames = Paths.getSparrowAtlas('logoBumpin');
 		logoBl.antialiasing = true;
 		logoBl.animation.addByPrefix('bump', 'logo bumpin', 24);
 		logoBl.animation.play('bump');
@@ -162,6 +164,12 @@ class TitleState extends MusicBeatState
 		titleText.animation.play('idle');
 		titleText.updateHitbox();
 		// titleText.screenCenter(X);
+		titleText.centerOffsets();
+		// uhh idk what i was doing
+		titleText.offset.x -= 13;
+		titleText.offset.y -= 13;
+		titleText.x -= 13;
+		titleText.y -= 13;
 		add(titleText);
 
 		var logo:FlxSprite = new FlxSprite().loadGraphic(Paths.image('logo'));
@@ -229,7 +237,9 @@ class TitleState extends MusicBeatState
 			Conductor.songPosition = FlxG.sound.music.time;
 		// FlxG.watch.addQuick('amp', FlxG.sound.music.amplitude);
 
-		if (FlxG.keys.justPressed.F)
+		coolBool = FlxG.random.bool(0.5);
+
+		if (FlxG.keys.justPressed.F11)
 		{
 			FlxG.fullscreen = !FlxG.fullscreen;
 		}
@@ -266,12 +276,15 @@ class TitleState extends MusicBeatState
 			FlxG.camera.flash(FlxColor.WHITE, 1);
 			FlxG.sound.play(Paths.sound('confirmMenu'), 0.7);
 
+			titleText.x += 13;
+			titleText.y += 13;
+
 			transitioning = true;
 			// FlxG.sound.music.stop();
 
-			new FlxTimer().start(2, function(tmr:FlxTimer)
+			new FlxTimer().start(0.8, function(tmr:FlxTimer)
 			{
-				FlxG.switchState(new MainMenuState());
+				FlxG.switchState(new OutdatedSubState());
 			});
 		}
 
@@ -287,9 +300,19 @@ class TitleState extends MusicBeatState
 	{
 		for (i in 0...textArray.length)
 		{
+			var alsoCool:Float = (i * 60) + 200;
+			
 			var money:Alphabet = new Alphabet(0, 0, textArray[i], true, false);
 			money.screenCenter(X);
-			money.y += (i * 60) + 200;
+			// dont make text appear from newgrounds logo if text is newgrounds
+			if (coolBool || textArray.contains('newgrounds'))
+				money.y -= 120 * i;
+			else
+				money.y += 120 * i;
+
+			money.alpha = 0;
+			// money.y += (i * 60) + 200;
+			FlxTween.tween(money, {y: alsoCool, alpha: 1}, 0.3, {ease: FlxEase.quadInOut});
 			credGroup.add(money);
 			textGroup.add(money);
 		}
@@ -297,9 +320,18 @@ class TitleState extends MusicBeatState
 
 	function addMoreText(text:String)
 	{
+		var coolThingie:Float = (textGroup.length * 60) + 200;
+		
 		var coolText:Alphabet = new Alphabet(0, 0, text, true, false);
 		coolText.screenCenter(X);
-		coolText.y += (textGroup.length * 60) + 200;
+		if (coolBool || text == 'newgrounds')
+			coolText.y -= 220;
+		else
+			coolText.y += 420;
+
+		coolText.alpha = 0;
+		FlxTween.tween(coolText, {y: coolThingie, alpha: 1}, 0.3, {ease: FlxEase.quadInOut});
+		// coolText.y += coolThingie;
 		credGroup.add(coolText);
 		textGroup.add(coolText);
 	}
