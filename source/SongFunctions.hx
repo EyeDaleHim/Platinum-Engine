@@ -7,6 +7,8 @@ class SongFunctions
 {
     public static function calculateScore(ratings:String, factor:Float = 0):Int
         {
+            var practiceMode:Bool = false;
+            
             // your score will be subtracted by the hit window of the note
             var newScore:Float = 0;
             var roundedScore:Int = 0;
@@ -21,7 +23,7 @@ class SongFunctions
                 case 'bad':
                     newScore = 200;
                 case 'shit':
-                    newScore = 75;
+                    newScore = 125;
                 default:
                     // its a bad idea to add misses because its WAYYYY over the safe time zone.
                     newScore = 0;
@@ -38,7 +40,10 @@ class SongFunctions
 
             // always subtract by 25 if rating is miss
             if (ratings == 'miss')
-                roundedScore = -25;
+                roundedScore = 25;
+
+            if (practiceMode)
+                roundedScore = 0;
     
             return roundedScore;
         }
