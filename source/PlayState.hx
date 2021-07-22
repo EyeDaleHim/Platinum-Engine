@@ -1404,6 +1404,7 @@ class PlayState extends MusicBeatState
 		#end
 
 		// dividing it by 1000 is seconds.
+		
 		timerLeft = (songLength - Conductor.songPosition) / 1000;
 		timerText.text = FlxStringUtil.formatTime(timerLeft, false);
 
@@ -1772,6 +1773,8 @@ class PlayState extends MusicBeatState
 					{
 						health -= 0.0475;
 						vocals.volume = 0;
+						if (!daNote.isSustainNote)
+							noteMiss(daNote.noteData, daNote);
 					}
 
 					daNote.active = false;
@@ -1910,9 +1913,7 @@ class PlayState extends MusicBeatState
 			daRating = 'good';
 
 		if (!isSustainNote)
-			score = SongFunctions.calculateScore(daRating, noteDiff);
-		else
-			score = SongFunctions.calculateHeld(daRating);
+			score = ScoreFunctions.calculateScore(daRating, noteDiff);
 		
 		if (daRating == 'sick')
 			totalRanksHit += 1;
@@ -2075,8 +2076,10 @@ class PlayState extends MusicBeatState
 			{
 				notes.forEachAlive(function(daNote:Note)
 				{
-					if (daNote.isSustainNote && daNote.canBeHit && daNote.mustPress && holdArray[daNote.noteData])
+					if (daNote.isSustainNote && daNote.canBeHit && daNote.mustPress && holdArray[daNote.noteData] && !daNote.tooLate)
 						goodNoteHit(daNote);
+					else if (daNote.isSustainNote && daNote.tooLate)
+						daNote.kill();
 				});
 			}
 	 
@@ -2187,8 +2190,8 @@ class PlayState extends MusicBeatState
 				!FlxG.save.data.downscroll && daNote.y < strumLine.y)
 				{
 					// Force good note hit regardless if it's too late to hit it or not as a fail safe
-					if(FlxG.save.data.botplay && daNote.canBeHit && daNote.mustPress ||
-					FlxG.save.data.botplay && daNote.tooLate && daNote.mustPress)
+					if(Settings.botplay && daNote.canBeHit && daNote.mustPress ||
+					Settings.botplay && daNote.tooLate && daNote.mustPress)
 					{
 						goodNoteHit(daNote);
 						boyfriend.holdTimer = daNote.sustainLength;
@@ -2323,11 +2326,25 @@ class PlayState extends MusicBeatState
 	{
 		if (!note.wasGoodHit)
 		{
+			// cant believe i have to copy paste this shit
+			var noteDiff:Float = Math.abs(note.strumTime - Conductor.songPosition);
+
+			var daRating:String = "sick";
+
+			if (noteDiff > Conductor.safeZoneOffset * 0.9)
+				daRating = 'shit';
+			else if (noteDiff > Conductor.safeZoneOffset * 0.75)
+				daRating = 'bad';
+			else if (noteDiff > Conductor.safeZoneOffset * 0.2)
+				daRating = 'good';
+			
 			if (!note.isSustainNote)
 			{
 				popUpScore(note.strumTime, note.isSustainNote);
 				combo += 1;
 			}
+			else
+				songScore += ScoreFunctions.calculateHeld(daRating, noteDiff);
 
 			if (note.noteData >= 0)
 				health += 0.023;
@@ -2537,7 +2554,7 @@ class PlayState extends MusicBeatState
 			dad.playAnim('cheer', true);
 		}
 
-		if (curBeat == 47 && curSong == 'Bopeebo')
+		if (curBeat == 47 || curBeat == 111 && curSong == 'Bopeebo')
 		{
 			new FlxTimer().start(0.3, function(tmr:FlxTimer)
 			{
