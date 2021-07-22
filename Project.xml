@@ -102,6 +102,7 @@
 	-->
 	<assets path="assets/fonts" embed='true'/>
 	<assets path="version" embed='true'/>
+	<assets path="platinumlogo" embed='true'/>
 
 	<!-- _______________________________ Libraries ______________________________ -->
 
