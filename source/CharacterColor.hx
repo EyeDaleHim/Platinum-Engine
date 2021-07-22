@@ -10,6 +10,9 @@ class CharacterColor
 	{
 		var color:FlxColor;
 
+		/* Use these if you are using multiple characters that begins
+		* with the same name.
+		**/
 		if (char.startsWith('bf'))
 			color = 0xFF5AB6E4;
 		else if (char.startsWith('gf'))
@@ -24,6 +27,7 @@ class CharacterColor
             color = 0xFFFF8432;
 		else
 		{
+			// Otherwise, use these.
 			switch (char)
 			{
 				case 'dad':
