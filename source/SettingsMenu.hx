@@ -154,7 +154,6 @@ class SettingsMenu extends MusicBeatState
 			changeSelection(1);
 		}
         if (back)
-            
             FlxG.switchState(new MainMenuState());
         if (accepted)
         {
