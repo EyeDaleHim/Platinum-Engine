@@ -39,11 +39,11 @@ class Character extends FlxSprite
 				animation.addByPrefix('singRIGHT', 'GF Right Note', 24, false);
 				animation.addByPrefix('singUP', 'GF Up Note', 24, false);
 				animation.addByPrefix('singDOWN', 'GF Down Note', 24, false);
-				animation.addByIndices('sad', 'gf sad', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], "", 24, false);
-				animation.addByIndices('danceLeft', 'GF Dancing Beat', [30, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14], "", 24, false);
-				animation.addByIndices('danceRight', 'GF Dancing Beat', [15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29], "", 24, false);
-				animation.addByIndices('hairBlow', "GF Dancing Beat Hair blowing", [0, 1, 2, 3], "", 24);
-				animation.addByIndices('hairFall', "GF Dancing Beat Hair Landing", [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], "", 24, false);
+				animation.addByIndices('sad', 'gf sad', countFrames(0, 12), "", 24, false);
+				animation.addByIndices('danceLeft', 'GF Dancing Beat', countFrames(15, 29, 30), "", 24, false);
+				animation.addByIndices('danceRight', 'GF Dancing Beat', countFrames(0, 14), "", 24, false);
+				animation.addByIndices('hairBlow', "GF Dancing Beat Hair blowing", countFrames(0, 3), "", 24);
+				animation.addByIndices('hairFall', "GF Dancing Beat Hair Landing", countFrames(0, 11), "", 24, false);
 				animation.addByPrefix('scared', 'GF FEAR', 24);
 
 				addOffset('cheer');
@@ -70,11 +70,11 @@ class Character extends FlxSprite
 				animation.addByPrefix('singRIGHT', 'GF Right Note', 24, false);
 				animation.addByPrefix('singUP', 'GF Up Note', 24, false);
 				animation.addByPrefix('singDOWN', 'GF Down Note', 24, false);
-				animation.addByIndices('sad', 'gf sad', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], "", 24, false);
-				animation.addByIndices('danceLeft', 'GF Dancing Beat', [30, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14], "", 24, false);
-				animation.addByIndices('danceRight', 'GF Dancing Beat', [15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29], "", 24, false);
-				animation.addByIndices('hairBlow', "GF Dancing Beat Hair blowing", [0, 1, 2, 3], "", 24);
-				animation.addByIndices('hairFall', "GF Dancing Beat Hair Landing", [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], "", 24, false);
+				animation.addByIndices('sad', 'gf sad', countFrames(0, 12), "", 24, false);
+				animation.addByIndices('danceLeft', 'GF Dancing Beat', countFrames(0, 14, 30), "", 24, false);
+				animation.addByIndices('danceRight', 'GF Dancing Beat', countFrames(15, 29), "", 24, false);
+				animation.addByIndices('hairBlow', "GF Dancing Beat Hair blowing", countFrames(0, 3), "", 24);
+				animation.addByIndices('hairFall', "GF Dancing Beat Hair Landing", countFrames(0, 11), "", 24, false);
 				animation.addByPrefix('scared', 'GF FEAR', 24);
 
 				addOffset('cheer');
@@ -97,8 +97,8 @@ class Character extends FlxSprite
 				tex = Paths.getSparrowAtlas('gfCar');
 				frames = tex;
 				animation.addByIndices('singUP', 'GF Dancing Beat Hair blowing CAR', [0], "", 24, false);
-				animation.addByIndices('danceLeft', 'GF Dancing Beat Hair blowing CAR', [30, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14], "", 24, false);
-				animation.addByIndices('danceRight', 'GF Dancing Beat Hair blowing CAR', [15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29], "", 24,
+				animation.addByIndices('danceLeft', 'GF Dancing Beat Hair blowing CAR', countFrames(0, 14, 30), "", 24, false);
+				animation.addByIndices('danceRight', 'GF Dancing Beat Hair blowing CAR', countFrames(0, 15, 29), "", 24,
 					false);
 
 				addOffset('danceLeft', 0);
@@ -110,8 +110,8 @@ class Character extends FlxSprite
 				tex = Paths.getSparrowAtlas('weeb/gfPixel');
 				frames = tex;
 				animation.addByIndices('singUP', 'GF IDLE', [2], "", 24, false);
-				animation.addByIndices('danceLeft', 'GF IDLE', [30, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14], "", 24, false);
-				animation.addByIndices('danceRight', 'GF IDLE', [15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29], "", 24, false);
+				animation.addByIndices('danceLeft', 'GF IDLE', countFrames(0, 14, 30), "", 24, false);
+				animation.addByIndices('danceRight', 'GF IDLE', countFrames(15, 29), "", 24, false);
 
 				addOffset('danceLeft', 0);
 				addOffset('danceRight', 0);
@@ -146,6 +146,7 @@ class Character extends FlxSprite
 				animation.addByPrefix('singDOWN', 'spooky DOWN note', 24, false);
 				animation.addByPrefix('singLEFT', 'note sing left', 24, false);
 				animation.addByPrefix('singRIGHT', 'spooky sing right', 24, false);
+				// not doing the function on this one
 				animation.addByIndices('danceLeft', 'spooky dance idle', [0, 2, 6], "", 12, false);
 				animation.addByIndices('danceRight', 'spooky dance idle', [8, 10, 12, 14], "", 12, false);
 
@@ -203,8 +204,9 @@ class Character extends FlxSprite
 				animation.addByPrefix('idle', 'monster idle', 24, false);
 				animation.addByPrefix('singUP', 'monster up note', 24, false);
 				animation.addByPrefix('singDOWN', 'monster down', 24, false);
-				animation.addByPrefix('singLEFT', 'Monster left note', 24, false);
-				animation.addByPrefix('singRIGHT', 'Monster Right note', 24, false);
+				// shut up this is to swap anims
+				animation.addByPrefix('singRIGHT', 'Monster left note', 24, false);
+				animation.addByPrefix('singLEFT', 'Monster Right note', 24, false);
 
 				addOffset('idle');
 				addOffset("singUP", -20, 50);
@@ -554,9 +556,32 @@ class Character extends FlxSprite
 
 	private var danced:Bool = false;
 
-	/**
+	public function countFrames(minFrames:Int = 0, maxFrames:Int = 24, ?beginFrames:Int, ?endFrames:Int):Array<Int>
+	{
+		// make some sort of failsafe
+		if (minFrames > maxFrames)
+			minFrames = maxFrames - 1;
+
+		// there's always that one number that doesn't get added to the array
+		maxFrames++;
+
+		var coolArray:Array<Int> = [for (i in minFrames...maxFrames) i];
+
+		if (beginFrames != null)
+			coolArray.unshift(beginFrames);
+
+		if (endFrames != null)
+			coolArray.push(endFrames);
+
+		trace(coolArray);
+		
+		return coolArray;
+	}
+	
+		/**
 	 * FOR GF DANCING SHIT
 	 */
+	
 	public function dance()
 	{
 		if (!debugMode)
