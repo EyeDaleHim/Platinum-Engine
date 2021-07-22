@@ -19,8 +19,11 @@ class PauseSubState extends MusicBeatSubstate
 	public var menuItems:Array<String> = ['Resume', 'Restart Song', 'Change difficulty', 'Exit to menu'];
 	
 	var curSelected:Int = 0;
+	var selectedString:String = '';
+	var daSelected:String;
 
 	var pauseMusic:FlxSound;
+	var selectTxt:FlxText;
 
 	var focus:Int = 0;
 
@@ -76,6 +79,10 @@ class PauseSubState extends MusicBeatSubstate
 			songText.targetY = i;
 			grpMenuShit.add(songText);
 		}
+		
+		selectTxt = new FlxText(0, 0, FlxG.width / 2.5, "", 24);
+		selectTxt.setFormat(Paths.font("vcr.ttf"), 24);
+		add(selectTxt);
 
 		changeSelection();
 
@@ -84,6 +91,8 @@ class PauseSubState extends MusicBeatSubstate
 
 	override function update(elapsed:Float)
 	{
+		daSelected = menuItems[curSelected];
+		
 		if (pauseMusic.volume < 0.5)
 			pauseMusic.volume += 0.01 * elapsed;
 
@@ -92,6 +101,22 @@ class PauseSubState extends MusicBeatSubstate
 		var upP = controls.UP_P;
 		var downP = controls.DOWN_P;
 		var accepted = controls.ACCEPT;
+
+		switch (daSelected)
+		{
+			case 'Resume':
+				selectedString = 'Go back to playing the game.';
+			case 'Restart Song':
+				selectedString = 'Restart the song from the beginning.';
+			case 'Change difficulty':
+				selectedString = 'Change the difficulty. But restarts the song.';
+			case 'Exit to menu':
+				selectedString = 'Go back to the menu.';
+			default:
+				selectedString = 'PAUSED';
+		}
+
+		selectTxt.text = selectedString;
 
 		if (upP/* || focusUp */)
 		{
@@ -193,8 +218,8 @@ class PauseSubState extends MusicBeatSubstate
 		}
 
 	function changeSelection(change:Int = 0):Void
-	{	
-			curSelected += change;
+	{
+		curSelected += change;
 
 			if (curSelected < 0)
 			curSelected = menuItems.length - 1;
