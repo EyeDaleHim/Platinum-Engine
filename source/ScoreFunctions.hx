@@ -3,7 +3,7 @@ package;
 import flixel.FlxG;
 import flixel.math.FlxMath;
 
-class SongFunctions
+class ScoreFunctions
 {
     public static function calculateScore(ratings:String, factor:Float = 0):Int
         {
@@ -47,7 +47,7 @@ class SongFunctions
     
             return roundedScore;
         }
-        public static function calculateHeld(ratings:String):Int
+        public static function calculateHeld(ratings:String, factor:Float):Int
         {
             // your score will be subtracted by the hit window of the note
             var newScore:Float = 0;
@@ -57,16 +57,25 @@ class SongFunctions
             {
                 // this was made higher because your rating score gets subtracted by the factor
                 case 'sick': 
-                    newScore = 35;
+                    newScore = 250;
                 case 'good':
-                    newScore = 20;
+                    newScore = 175;
+                // idc if you get negative score cuz fuk you
                 case 'bad':
-                    newScore = 5;
+                    newScore = 90;
                 case 'shit':
-                    newScore = 0;
+                    newScore = 50;
                 default:
                     newScore = 0;
             }
+
+            if (factor < 0)
+                {
+                    factor = -factor;
+                }
+                
+            newScore = (newScore - factor);
+
             roundedScore = Std.int(newScore);
             trace(roundedScore);
             
