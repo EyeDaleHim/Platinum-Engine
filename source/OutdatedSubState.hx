@@ -18,8 +18,8 @@ class OutdatedSubState extends MusicBeatState
 		add(bg);
 		var ver = "v" + Application.current.meta.get('version');
 		var txt:FlxText = new FlxText(0, 0, FlxG.width,
-			"Platinum Engine-V1.0.0-DEVBUILD-8"
-			+ "\nYou may access unauthorized content that you cannot see unless authorized.",
+			"NOTE: "
+			+ "\nYou are using an unfinished build of the full release. New features are subject to change.",
 			32);
 		txt.setFormat("VCR OSD Mono", 32, FlxColor.WHITE, CENTER);
 		txt.screenCenter();
@@ -30,7 +30,7 @@ class OutdatedSubState extends MusicBeatState
 	{
 		if (controls.ACCEPT)
 		{
-			FlxG.openURL("https://ninja-muffin24.itch.io/funkin");
+			FlxG.switchState(new MainMenuState());
 		}
 		if (controls.BACK)
 		{
