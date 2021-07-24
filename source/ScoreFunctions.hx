@@ -36,7 +36,7 @@ class ScoreFunctions
             newScore = (newScore - factor);
     
             roundedScore = Std.int(newScore);
-            trace(roundedScore);
+            trace(roundedScore + ' note ' + ratings);
 
             // always subtract by 25 if rating is miss
             if (ratings == 'miss')
@@ -57,14 +57,14 @@ class ScoreFunctions
             {
                 // this was made higher because your rating score gets subtracted by the factor
                 case 'sick': 
-                    newScore = 250;
+                    newScore = 450 * 0.75;
                 case 'good':
-                    newScore = 175;
+                    newScore = 325 * 0.75;
                 // idc if you get negative score cuz fuk you
                 case 'bad':
-                    newScore = 90;
+                    newScore = 200 * 0.75;
                 case 'shit':
-                    newScore = 50;
+                    newScore = 125 * 0.75;
                 default:
                     newScore = 0;
             }
@@ -77,7 +77,7 @@ class ScoreFunctions
             newScore = (newScore - factor);
 
             roundedScore = Std.int(newScore);
-            trace(roundedScore);
+            trace(roundedScore + ' held ' + ratings);
             
             return roundedScore;
         }

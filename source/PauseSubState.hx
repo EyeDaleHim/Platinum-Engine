@@ -150,14 +150,21 @@ class PauseSubState extends MusicBeatSubstate
 						// use it if we somehow broke lmao
 						FlxG.switchState(new MainMenuState());
 					}
-				case 'EASY':
-					PlayState.storyDifficulty = 0;
-					LoadingState.loadAndSwitchState(new PlayState());
-				case "NORMAL":
-					PlayState.storyDifficulty = 1;
-					LoadingState.loadAndSwitchState(new PlayState());
-				case "HARD":
-					PlayState.storyDifficulty = 2;
+				case 'EASY' | "NORMAL" | "HARD":
+					if (daSelected == 'EASY')
+						PlayState.storyDifficulty = 0;
+					else if (daSelected == "NORMAL")
+						PlayState.storyDifficulty = 1;
+					else if (daSelected == "HARD")
+						PlayState.storyDifficulty = 2;
+					var poop:String = Highscore.formatSong(PlayState.SONG.song.toLowerCase(), PlayState.storyDifficulty);
+
+					trace(poop);
+		
+					trace(poop, menuItems[curSelected].toLowerCase());
+					PlayState.SONG = Song.loadFromJson(poop, PlayState.SONG.song.toLowerCase());
+
+		
 					LoadingState.loadAndSwitchState(new PlayState());
 				case 'Back':
 					curSelected = 0;

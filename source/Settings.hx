@@ -30,16 +30,18 @@ class Settings
             useDefaults = true;
             trace('lol its a success what a chad');
             }
+       /*
         if (FlxG.save.data.upBind == null)
-            FlxG.save.data.upBind = "W";
+            FlxG.save.data.upBind = W;
         if (FlxG.save.data.downBind == null)
-            FlxG.save.data.downBind = "S";
+            FlxG.save.data.downBind = S;
         if (FlxG.save.data.leftBind == null)
-            FlxG.save.data.leftBind = "A";
+            FlxG.save.data.leftBind = A;
         if (FlxG.save.data.rightBind == null)
-            FlxG.save.data.rightBind = "D";
+            FlxG.save.data.rightBind = D;
         if (FlxG.save.data.resetBind == null)
-            FlxG.save.data.resetBind = "R";
+            FlxG.save.data.resetBind = R;
+        */
 
         downscroll = FlxG.save.data.downscroll;
         accuracy = FlxG.save.data.accuracy;
@@ -86,10 +88,13 @@ class Settings
         {
             case 'downscroll':
                 FlxG.save.data.downscroll = coolBool;
+                downscroll = FlxG.save.data.downscroll;
             case 'accuracy':
                 FlxG.save.data.accuracy = coolString;
+                accuracy = FlxG.save.data.accuracy;
             case 'ghostTap':
                 FlxG.save.data.ghostTap = coolBool;
+                ghostTap = FlxG.save.data.ghostTap;
             case 'keyBinds':
                 if (keyBind == 'up')
                     FlxG.save.data.upBind = setting;
@@ -103,5 +108,20 @@ class Settings
 
         FlxG.save.flush();
         trace("Setting " + target + " has been saved with value of " + setting);
+    }
+    public static function reset(target:String, ?all:Bool = false)
+    {
+        if (!all)
+        {
+            switch (target)
+            {
+                case 'downscroll':
+                    FlxG.save.data.downscroll = null;
+                case 'ghostTap':
+                    FlxG.save.data.ghostTap = null;
+                case 'accuracy':
+                    FlxG.save.data.accuracy = null;
+            }
+        }
     }
 }

@@ -12,22 +12,6 @@ import openfl.events.Event;
 class Main extends Sprite
 {
 	public static var modName = "TeamPlatinum"; // What should be the name of your mod. Useful if you want different save datas.
-	public static var defaultSaveData:Array<Dynamic> = // What save data should be default if not saved.
-	[
-		"simple", // Accuracy, values are "none", "simple", "complex"
-		false, // Ghost Tapping, values are true and false.
-		false // Downscroll, values are true and false.
-	];
-	public static var defaultKeybinds:Array<FlxKey> = // What should be the default keybinds
-	[
-		FlxKey.W, // Up
-		FlxKey.A, // Left
-		FlxKey.S, // Down
-		FlxKey.D  // Right
-	];
-
-	public static var useDefaults:Bool = true; // Whether or not you want to use the default settings.
-	// If you use an invalid type, there's a failsafe, so you cannot confuse the game.
 	
 	var gameWidth:Int = 1280; // Width of the game in pixels (might be less / more in actual pixels depending on your zoom).
 	var gameHeight:Int = 720; // Height of the game in pixels (might be less / more in actual pixels depending on your zoom).

@@ -32,6 +32,12 @@ using StringTools;
 
 class TitleState extends MusicBeatState
 {
+	#if !web
+	public static var soundExt = ".ogg";
+	#else
+	public static var soundExt = ".mp3";
+	#end
+	public
 	static var initialized:Bool = false;
 	var coolBool:Bool = false;
 

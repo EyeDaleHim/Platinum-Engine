@@ -21,9 +21,9 @@ using StringTools;
 
 class SettingsGameplay extends MusicBeatState
 {
-    var curOptions:Array<String> =  ['gameplay options','downscroll', 'ghost tapping', 'accuracy mode', 'keybinds'];
+    var curOptions:Array<String> =  ['gameplay options', 'downscroll', 'ghost tapping'];
     // note to self: null values should not be changed
-    var changeableValues:Array<Dynamic> = [null, false, false, 'simple', null];
+    var changeableValues:Array<Dynamic> = [null, FlxG.save.data.downscroll, FlxG.save.data.ghostTap, FlxG.save.data.accuracy];
 
     var curSelected:Int = 0;
     var grpItems:FlxTypedGroup<Alphabet>;
@@ -32,6 +32,7 @@ class SettingsGameplay extends MusicBeatState
     var dumbBitch:FlxText;
 
     var valueText:FlxText;
+    var stringOfBool:String = '';
     
     override function create()
     {
@@ -162,6 +163,7 @@ class SettingsGameplay extends MusicBeatState
         
         Settings.save(changeableValues[selected], valueString);
 
+
     }
 
     override function update(elapsed:Float)
@@ -178,6 +180,10 @@ class SettingsGameplay extends MusicBeatState
             var back = controls.BACK;
 
             dumbBitch.text = coolString;
+            if (someString.startsWith('false'))
+                someString = 'off';
+            else if (someString.startsWith('true'))
+                someString = 'on';
             valueText.text = someString.toUpperCase();
 
             if (curSelected == 0)
@@ -194,7 +200,7 @@ class SettingsGameplay extends MusicBeatState
             }
             
             if (back)
-                FlxG.switchState(new SettingsMenu());
+                FlxG.switchState(new MainMenuState());
             
             if (accepted)
             {
