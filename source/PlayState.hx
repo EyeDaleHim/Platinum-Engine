@@ -155,8 +155,17 @@ class PlayState extends MusicBeatState
 
 	public var misses:Int = 0;
 
+	public var downscroll:Bool;
+	public var ghostTap:Bool;
+	public var accuracyType:String;
+
 	override public function create()
 	{
+		// initalize settings
+		downscroll = FlxG.save.data.downscroll;
+		ghostTap = FlxG.save.data.ghostTap;
+		accuracyType = FlxG.save.data.accuracyType;
+		
 		if (FlxG.sound.music != null)
 			FlxG.sound.music.stop();
 
@@ -698,13 +707,13 @@ class PlayState extends MusicBeatState
 
 		Conductor.songPosition = -5000;
 
-		if (FlxG.save.data.downscroll)
+		if (downscroll)
 			strumLine = new FlxSprite(0, 550).makeGraphic(FlxG.width, 10);
 		else
 			strumLine = new FlxSprite(0, 50).makeGraphic(FlxG.width, 10);
 
 		strumLine.scrollFactor.set();
-		if (FlxG.save.data.downscroll)
+		if (downscroll)
 			strumLine.y = FlxG.height - 165;
 
 		strumLineNotes = new FlxTypedGroup<FlxSprite>();
@@ -741,7 +750,7 @@ class PlayState extends MusicBeatState
 
 		FlxG.fixedTimestep = false;
 
-		healthBarBG = new FlxSprite(0, FlxG.save.data.downscroll ? FlxG.height * 0.1 : FlxG.height * 0.9).loadGraphic(Paths.image('healthBar'));
+		healthBarBG = new FlxSprite(0, downscroll ? FlxG.height * 0.1 : FlxG.height * 0.9).loadGraphic(Paths.image('healthBar'));
 		healthBarBG.screenCenter(X);
 		healthBarBG.scrollFactor.set();
 		add(healthBarBG);
@@ -756,7 +765,7 @@ class PlayState extends MusicBeatState
 		scoreTxt.setFormat("assets/fonts/vcr.ttf", 22, FlxColor.WHITE, FlxTextAlign.CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		scoreTxt.scrollFactor.set();
 
-		timerText = new FlxText(healthBarBG.x - 105, FlxG.save.data.downscroll ? 
+		timerText = new FlxText(healthBarBG.x - 105, downscroll ? 
 			healthBarBG.y + healthBarBG.height + 10 + scoreTxt.height + 5 : healthBarBG.y - healthBarBG.height - 10, 800, "", 22);
 		timerText.setFormat("assets/fonts/vcr.ttf", 22, FlxColor.WHITE, FlxTextAlign.CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		timerText.scrollFactor.set();
@@ -1715,7 +1724,7 @@ class PlayState extends MusicBeatState
 		{
 			notes.forEachAlive(function(daNote:Note)
 			{
-				if (daNote.y > FlxG.height && !FlxG.save.data.downscroll || daNote.y < -FlxG.height && FlxG.save.data.downscroll)
+				if (daNote.y > FlxG.height && !downscroll || daNote.y < -FlxG.height && downscroll)
 				{
 					daNote.active = false;
 					daNote.visible = false;
@@ -1726,7 +1735,7 @@ class PlayState extends MusicBeatState
 					daNote.active = true;
 				}
 
-				if(FlxG.save.data.downscroll){
+				if(downscroll){
 					daNote.y = (strumLine.y + (Conductor.songPosition - daNote.strumTime) * (0.45 * FlxMath.roundDecimal(PlayState.SONG.speed, 2)));
 				}
 				else {
@@ -1735,8 +1744,8 @@ class PlayState extends MusicBeatState
 
 					// why
 				if (daNote.isSustainNote
-					&& (((daNote.y + daNote.offset.y <= strumLine.y + Note.swagWidth / 2) && !FlxG.save.data.downscroll)
-					|| (FlxG.save.data.downscroll && (daNote.y + daNote.offset.y >= strumLine.y + Note.swagWidth / 2)))
+					&& (((daNote.y + daNote.offset.y <= strumLine.y + Note.swagWidth / 2) && !downscroll)
+					|| (downscroll && (daNote.y + daNote.offset.y >= strumLine.y + Note.swagWidth / 2)))
 					&& (((!daNote.mustPress || (daNote.wasGoodHit || (daNote.prevNote.wasGoodHit && !daNote.canBeHit))))
 					|| ((daNote.mustPress || (daNote.wasGoodHit || (daNote.prevNote.wasGoodHit && !daNote.canBeHit))))))
 					{
@@ -1799,7 +1808,7 @@ class PlayState extends MusicBeatState
 				// WIP interpolation shit? Need to fix the pause issue
 				// daNote.y = (strumLine.y - (songTime - daNote.strumTime) * (0.45 * PlayState.SONG.speed));
 
-				if ((daNote.y < -daNote.height && !FlxG.save.data.downscroll) || (daNote.y > FlxG.height + daNote.height && FlxG.save.data.downscroll))
+				if ((daNote.y < -daNote.height && !downscroll) || (daNote.y > FlxG.height + daNote.height && downscroll))
 				{
 					if (daNote.tooLate || !daNote.wasGoodHit)
 					{
@@ -2169,7 +2178,7 @@ class PlayState extends MusicBeatState
 					goodNoteHit(possibleNotes[0]);
 				else if (possibleNotes.length > 0 && !dontCheck)
 				{
-					if (!FlxG.save.data.ghostTap)	
+					if (!ghostTap)	
 					{
 						for (shit in 0...pressArray.length)
 							{ // if a direction is hit that shouldn't be
@@ -2188,14 +2197,14 @@ class PlayState extends MusicBeatState
 						}
 					}
 				}
-				else if (!FlxG.save.data.ghostTap)
+				else if (!ghostTap)
 					{
 						for (shit in 0...pressArray.length)
 							if (pressArray[shit])
 								noteMiss(shit, null);
 					}
 
-				if(dontCheck && possibleNotes.length > 0 && FlxG.save.data.ghostTap && !FlxG.save.data.botplay)
+				if(dontCheck && possibleNotes.length > 0 && ghostTap && !FlxG.save.data.botplay)
 				{
 					if (mashViolations > 3)
 					{
@@ -2211,8 +2220,8 @@ class PlayState extends MusicBeatState
 			
 			notes.forEachAlive(function(daNote:Note)
 			{
-				if(FlxG.save.data.downscroll && daNote.y > strumLine.y ||
-				!FlxG.save.data.downscroll && daNote.y < strumLine.y)
+				if(downscroll && daNote.y > strumLine.y ||
+				!downscroll && daNote.y < strumLine.y)
 				{
 					// Force good note hit regardless if it's too late to hit it or not as a fail safe
 					if(Settings.botplay && daNote.canBeHit && daNote.mustPress ||
@@ -2519,7 +2528,7 @@ class PlayState extends MusicBeatState
 
 		if (generatedMusic)
 		{
-			notes.sort(FlxSort.byY, FlxG.save.data.downscroll ? FlxSort.ASCENDING : FlxSort.DESCENDING);
+			notes.sort(FlxSort.byY, downscroll ? FlxSort.ASCENDING : FlxSort.DESCENDING);
 		}
 
 		if (SONG.notes[Math.floor(curStep / 16)] != null)
