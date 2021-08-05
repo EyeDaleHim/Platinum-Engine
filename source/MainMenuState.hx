@@ -131,6 +131,7 @@ class MainMenuState extends MusicBeatState
 				changeItem(1);
 			}
 
+			#if debug
 			if (controls.RIGHT_P)
 			{
 				var code:Int = 0;
@@ -138,6 +139,7 @@ class MainMenuState extends MusicBeatState
 				trace('exited game with code of ' + code);
 				Sys.exit(code);
 			}
+			#end
 
 			if (controls.BACK)
 			{
