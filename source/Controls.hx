@@ -741,4 +741,17 @@ class Controls extends FlxActionSet
 	{
 		return input.device == GAMEPAD && (deviceID == FlxInputDeviceID.ALL || input.deviceID == deviceID);
 	}
+	inline public static function getListKeys():Array<String>
+	{
+		var keysList:Array<String> = [];
+
+		// aswd
+
+		keysList.push("A");
+		keysList.push("S");
+		keysList.push("W");
+		keysList.push("D");
+		
+		return keysList;
+	}
 }

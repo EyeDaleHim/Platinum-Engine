@@ -53,9 +53,11 @@ class DialogueBox extends FlxSpriteGroup
 		bgFade.alpha = 0;
 		add(bgFade);
 
-		new FlxTimer().start(0.83, function(tmr:FlxTimer)
+		var fadeCools:Array<Float> = [0.2, 0.7, 0.83];
+		
+		new FlxTimer().start(fadeCools[2], function(tmr:FlxTimer)
 		{
-			bgFade.alpha += (1 / 5) * 0.7;
+			bgFade.alpha += fadeCools[0] * fadeCools[1];
 			if (bgFade.alpha > 0.7)
 				bgFade.alpha = 0.7;
 		}, 5);
@@ -238,8 +240,11 @@ class DialogueBox extends FlxSpriteGroup
 				portraitRight.visible = false;
 				if (!portraitLeft.visible)
 				{
-					portraitLeft.visible = true;
-					portraitLeft.animation.play('enter');
+					if (PlayState.SONG.song.toLowerCase() != 'thorns')
+					{
+						portraitLeft.visible = true;
+						portraitLeft.animation.play('enter');
+					}
 				}
 			case 'bf':
 				portraitLeft.visible = false;

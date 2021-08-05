@@ -3,8 +3,10 @@ package;
 #if desktop
 import Discord.DiscordClient;
 import sys.thread.Thread;
+import lime.system.System;
 #end
 import flixel.FlxG;
+import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.addons.display.FlxGridOverlay;
@@ -37,10 +39,11 @@ class TitleState extends MusicBeatState
 	#else
 	public static var soundExt = ".mp3";
 	#end
-	public
-	static var initialized:Bool = false;
+	public static var initialized:Bool = false;
 	var coolBool:Bool = false;
 
+	var exitSprite:FlxSprite;
+	var followCam:FlxObject;
 	var blackScreen:FlxSprite;
 	var credGroup:FlxGroup;
 	var credTextShit:Alphabet;
@@ -50,13 +53,17 @@ class TitleState extends MusicBeatState
 	var curWacky:Array<String> = [];
 
 	var wackyImage:FlxSprite;
+	var isInExit:Bool = false;
 
 	override public function create():Void
 	{
 		PlayerSettings.init();
 		Settings.init();
 
+		followCam = new FlxObject(FlxG.width * 0.5, FlxG.height * 0.5);
 		curWacky = FlxG.random.getObject(getIntroTextShit());
+
+		FlxG.camera.follow(followCam, 1);
 
 		// DEBUG BULLSHIT
 
@@ -122,10 +129,6 @@ class TitleState extends MusicBeatState
 			transIn = FlxTransitionableState.defaultTransIn;
 			transOut = FlxTransitionableState.defaultTransOut;
 
-			// HAD TO MODIFY SOME BACKEND SHIT
-			// IF THIS PR IS HERE IF ITS ACCEPTED UR GOOD TO GO
-			// https://github.com/HaxeFlixel/flixel-addons/pull/348
-
 			// var music:FlxSound = new FlxSound();
 			// music.loadStream(Paths.music('freakyMenu'));
 			// FlxG.sound.list.add(music);
@@ -138,7 +141,7 @@ class TitleState extends MusicBeatState
 		Conductor.changeBPM(102);
 		persistentUpdate = true;
 
-		var bg:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
+		var bg:FlxSprite = new FlxSprite(-1280).makeGraphic(FlxG.width * 5, FlxG.height * 5, FlxColor.BLACK);
 		// bg.antialiasing = true;
 		// bg.setGraphicSize(Std.int(bg.width * 0.6));
 		// bg.updateHitbox();
@@ -183,6 +186,10 @@ class TitleState extends MusicBeatState
 		logo.antialiasing = true;
 		// add(logo);
 
+		exitSprite = new FlxSprite(-600, FlxG.height * 0.5);
+		exitSprite.loadGraphic(Paths.image('titleExit'));
+		exitSprite.antialiasing = true;
+
 		// FlxTween.tween(logoBl, {y: logoBl.y + 50}, 0.6, {ease: FlxEase.quadInOut, type: PINGPONG});
 		// FlxTween.tween(logo, {y: logoBl.y + 50}, 0.6, {ease: FlxEase.quadInOut, type: PINGPONG, startDelay: 0.1});
 
@@ -190,7 +197,7 @@ class TitleState extends MusicBeatState
 		add(credGroup);
 		textGroup = new FlxGroup();
 
-		blackScreen = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
+		blackScreen = new FlxSprite(-1280).makeGraphic(FlxG.width * 4, FlxG.height * 4, FlxColor.BLACK);
 		credGroup.add(blackScreen);
 
 		credTextShit = new Alphabet(0, 0, "ninjamuffin99\nPhantomArcade\nkawaisprite\nevilsk8er", true);
@@ -275,23 +282,31 @@ class TitleState extends MusicBeatState
 			#end
 		}
 
-		if (pressedEnter && !transitioning && skippedIntro)
+		if (pressedEnter)
 		{
-			titleText.animation.play('press');
+			if (isInExit)
+				{
+					System.exit(0);
+				}
+		}
 
-			FlxG.camera.flash(FlxColor.WHITE, 1);
-			FlxG.sound.play(Paths.sound('confirmMenu'), 0.7);
+		if (pressedEnter && !transitioning && skippedIntro && curBeat > 1)
+		{
+				titleText.animation.play('press');
 
-			titleText.x += 13;
-			titleText.y += 13;
+				FlxG.camera.flash(FlxColor.WHITE, 1);
+				FlxG.sound.play(Paths.sound('confirmMenu'), 0.7);
 
-			transitioning = true;
-			// FlxG.sound.music.stop();
+				titleText.x += 13;
+				titleText.y += 13;
 
-			new FlxTimer().start(0.8, function(tmr:FlxTimer)
-			{
-				FlxG.switchState(new OutdatedSubState());
-			});
+				transitioning = true;
+				// FlxG.sound.music.stop();
+
+				new FlxTimer().start(0.8, function(tmr:FlxTimer)
+				{
+					FlxG.switchState(new OutdatedSubState());
+				});
 		}
 
 		if (pressedEnter && !skippedIntro)
@@ -301,6 +316,18 @@ class TitleState extends MusicBeatState
 
 		super.update(elapsed);
 	}
+
+	/*
+	function timeToExit()
+	{
+		isInExit = true;
+		
+		FlxTween.tween(exitSprite, {x: FlxG.width * 0.5}, 0.7, {ease: FlxEase.quadOut, onComplete: function(twn:FlxTween) 
+		{
+	
+		}});
+	}
+	*/
 
 	function createCoolText(textArray:Array<String>)
 	{
@@ -354,6 +381,8 @@ class TitleState extends MusicBeatState
 	override function beatHit()
 	{
 		super.beatHit();
+
+		// FlxTween.tween(followCam, {x: FlxG.width * FlxG.random.float(0.47, 0.53), y: FlxG.height * FlxG.random.float(0.49, 0.51)}, 1, {ease: FlxEase.quadInOut});
 
 		logoBl.animation.play('bump');
 		danceLeft = !danceLeft;

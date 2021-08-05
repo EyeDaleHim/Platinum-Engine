@@ -16,7 +16,10 @@ typedef BPMChangeEvent =
 
 class Conductor
 {
+	
 	public static var bpm:Int = 100;
+	// Fix Girlfriend Dance Animations???
+	public static var formerBPM:Int = 100;
 	public static var crochet:Float = ((60 / bpm) * 1000); // beats in milliseconds
 	public static var stepCrochet:Float = crochet / 4; // steps in milliseconds
 	public static var songPosition:Float;
@@ -61,6 +64,7 @@ class Conductor
 
 	public static function changeBPM(newBpm:Int)
 	{
+		formerBPM = bpm;
 		bpm = newBpm;
 
 		crochet = ((60 / bpm) * 1000);

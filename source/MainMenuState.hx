@@ -131,6 +131,14 @@ class MainMenuState extends MusicBeatState
 				changeItem(1);
 			}
 
+			if (controls.RIGHT_P)
+			{
+				var code:Int = 0;
+				
+				trace('exited game with code of ' + code);
+				Sys.exit(code);
+			}
+
 			if (controls.BACK)
 			{
 				FlxG.switchState(new TitleState());

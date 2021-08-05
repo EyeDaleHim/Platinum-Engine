@@ -5,9 +5,10 @@ import flixel.FlxState;
 import flixel.input.keyboard.FlxKey;
 import openfl.Assets;
 import openfl.Lib;
-import openfl.display.FPS;
+import debug.FPS;
 import openfl.display.Sprite;
 import openfl.events.Event;
+import debug.Dev;
 
 class Main extends Sprite
 {
@@ -71,6 +72,10 @@ class Main extends Sprite
 		#end
 
 		addChild(new FlxGame(gameWidth, gameHeight, initialState, zoom, framerate, framerate, skipSplash, startFullscreen));
+
+		#if debug
+		addChild(new Dev(10, 28, 0xFFFFFF));
+		#end
 
 		#if !mobile
 		addChild(new FPS(10, 3, 0xFFFFFF));

@@ -21,9 +21,9 @@ using StringTools;
 
 class SettingsGameplay extends MusicBeatState
 {
-    var curOptions:Array<String> =  ['gameplay options', 'downscroll', 'ghost tapping'];
+    var curOptions:Array<String> =  ['gameplay options', 'downscroll', 'ghost tapping', 'accuracy type', 'score system'];
     // note to self: null values should not be changed
-    var changeableValues:Array<Dynamic> = [null, FlxG.save.data.downscroll, FlxG.save.data.ghostTap, FlxG.save.data.accuracy];
+    var changeableValues:Array<Dynamic> = [null, FlxG.save.data.downscroll, FlxG.save.data.ghostTap, FlxG.save.data.accuracy, FlxG.save.data.scoreType];
 
     var curSelected:Int = 0;
     var grpItems:FlxTypedGroup<Alphabet>;
@@ -36,6 +36,9 @@ class SettingsGameplay extends MusicBeatState
     
     override function create()
     {
+        // Assuming settings wasn't initalized yet
+        Settings.init();
+        
         var menuBG:FlxSprite = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
 		menuBG.color = 0xFF5EBCFF;
 		menuBG.setGraphicSize(Std.int(menuBG.width * 1.1));
@@ -104,10 +107,12 @@ class SettingsGameplay extends MusicBeatState
                     case 1:
                         coolString = "If notes should go from the bottom instead of the top.";
                     case 2:
-                        coolString = "If tapping without notes should give you a penalty.";
+                        coolString = "If tapping without notes should give you a miss penalty.";
                     case 3:
-                        coolString = "Set how complex your accuracy is.";
+                        coolString = "Set how complex your accuracy will be calculated.";
                     case 4:
+                        coolString = "The new score system will calculate your score minus the note difference.";
+                    case 5:
                         coolString = "Set your keybinds.";
                 }
     
@@ -131,12 +136,23 @@ class SettingsGameplay extends MusicBeatState
                 item = !item;
             else if ((item is String))
             {
-                if (item == 'simple')
-                    item = 'complex';
-                else if (item == 'complex')
-                    item = 'none';
-                else if (item == 'none')
-                    item = 'simple';
+                if (selected == 4)
+                {
+                    if (item == 'new')
+                        item = 'old';
+                    else if (item == 'old')
+                        item = 'new';
+                }
+                else if (selected == 3)
+                {
+                    if (item == 'simple')
+                        item = 'complex';
+                    else if (item == 'complex')
+                        item = 'none';
+                    else if (item == 'none')
+                        item = 'simple';
+                }
+                else {}
             }
 
             trace(item);
@@ -159,11 +175,11 @@ class SettingsGameplay extends MusicBeatState
                 valueString = 'ghostTap';
             case 3:
                 valueString = 'accuracy';
+            case 4:
+                valueString = 'scoreType';
         }
         
         Settings.save(changeableValues[selected], valueString);
-
-
     }
 
     override function update(elapsed:Float)
@@ -176,6 +192,7 @@ class SettingsGameplay extends MusicBeatState
             
             var upP = controls.UP_P;
             var downP = controls.DOWN_P;
+            var leftP = controls.LEFT_P;
             var accepted = controls.ACCEPT;
             var back = controls.BACK;
 
@@ -198,6 +215,14 @@ class SettingsGameplay extends MusicBeatState
             {
                 changeSelection(1);
             }
+
+            #if debug
+            if (leftP)
+            {
+                Settings.reset('downscroll', true);
+                FlxG.resetState();
+            }
+            #end
             
             if (back)
                 FlxG.switchState(new MainMenuState());

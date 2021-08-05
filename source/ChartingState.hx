@@ -480,6 +480,14 @@ class ChartingState extends MusicBeatState
 
 		strumLine.y = getYfromStrum((Conductor.songPosition - sectionStartTime()) % (Conductor.stepCrochet * _song.notes[curSection].lengthInSteps));
 
+		if (strumLine.y < gridBG.y - 3)
+		{
+			if (curSection != 0)
+				changeSection(curSection - 1, false);
+			else
+				FlxG.sound.music.time = 0;
+		}
+
 		if (curBeat % 4 == 0 && curStep >= 16 * (curSection + 1))
 		{
 			trace(curStep);
@@ -643,7 +651,7 @@ class ChartingState extends MusicBeatState
 					FlxG.sound.music.pause();
 					vocals.pause();
 
-					var daTime:Float = Conductor.stepCrochet * 2;
+					var daTime:Float = Conductor.stepCrochet * 7;
 
 					if (FlxG.keys.justPressed.W)
 					{
