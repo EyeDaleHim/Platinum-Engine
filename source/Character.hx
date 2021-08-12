@@ -33,7 +33,7 @@ class Character extends FlxSprite
 		this.isPlayer = isPlayer;
 
 		var tex:FlxAtlasFrames;
-		antialiasing = true;
+		antialiasing = FlxG.save.data.antialiasing;
 
 		switch (curCharacter)
 		{
@@ -68,6 +68,7 @@ class Character extends FlxSprite
 				addOffset('scared', -2, -17);
 
 				playAnim('danceRight');
+				antialiasing = FlxG.save.data.antialiasing;
 
 			case 'gf-christmas':
 				tex = Paths.getSparrowAtlas('christmas/gfChristmas');
@@ -99,6 +100,7 @@ class Character extends FlxSprite
 				addOffset('scared', -2, -17);
 
 				playAnim('danceRight');
+				antialiasing = FlxG.save.data.antialiasing;
 
 			case 'gf-car':
 				tex = Paths.getSparrowAtlas('gfCar');
@@ -112,6 +114,7 @@ class Character extends FlxSprite
 				addOffset('danceRight', 0);
 
 				playAnim('danceRight');
+				antialiasing = FlxG.save.data.antialiasing;
 
 			case 'gf-pixel':
 				tex = Paths.getSparrowAtlas('weeb/gfPixel');
@@ -146,6 +149,7 @@ class Character extends FlxSprite
 				addOffset("singDOWN", 0, -30);
 
 				playAnim('idle');
+				antialiasing = FlxG.save.data.antialiasing;
 			case 'spooky':
 				tex = Paths.getSparrowAtlas('spooky_kids_assets');
 				frames = tex;
@@ -166,6 +170,7 @@ class Character extends FlxSprite
 				addOffset("singDOWN", -50, -130);
 
 				playAnim('danceRight');
+				antialiasing = FlxG.save.data.antialiasing;
 			case 'mom':
 				tex = Paths.getSparrowAtlas('Mom_Assets');
 				frames = tex;
@@ -185,6 +190,7 @@ class Character extends FlxSprite
 				addOffset("singDOWN", 20, -160);
 
 				playAnim('idle');
+				antialiasing = FlxG.save.data.antialiasing;
 
 			case 'mom-car':
 				tex = Paths.getSparrowAtlas('momCar');
@@ -205,6 +211,7 @@ class Character extends FlxSprite
 				addOffset("singDOWN", 20, -160);
 
 				playAnim('idle');
+				antialiasing = FlxG.save.data.antialiasing;
 			case 'monster':
 				tex = Paths.getSparrowAtlas('Monster_Assets');
 				frames = tex;
@@ -221,6 +228,7 @@ class Character extends FlxSprite
 				addOffset("singLEFT", -30);
 				addOffset("singDOWN", -30, -40);
 				playAnim('idle');
+				antialiasing = FlxG.save.data.antialiasing;
 			case 'monster-christmas':
 				tex = Paths.getSparrowAtlas('christmas/monsterChristmas');
 				frames = tex;
@@ -236,6 +244,7 @@ class Character extends FlxSprite
 				addOffset("singLEFT", -30);
 				addOffset("singDOWN", -40, -94);
 				playAnim('idle');
+				antialiasing = FlxG.save.data.antialiasing;
 			case 'pico':
 				tex = Paths.getSparrowAtlas('Pico_FNF_assetss');
 				frames = tex;
@@ -274,6 +283,7 @@ class Character extends FlxSprite
 				playAnim('idle');
 
 				flipX = true;
+				antialiasing = FlxG.save.data.antialiasing;
 
 			case 'bf':
 				var tex = Paths.getSparrowAtlas('BOYFRIEND');
@@ -313,6 +323,7 @@ class Character extends FlxSprite
 				playAnim('idle');
 
 				flipX = true;
+				antialiasing = FlxG.save.data.antialiasing;
 
 			case 'bf-christmas':
 				var tex = Paths.getSparrowAtlas('christmas/bfChristmas');
@@ -342,6 +353,7 @@ class Character extends FlxSprite
 				playAnim('idle');
 
 				flipX = true;
+				antialiasing = FlxG.save.data.antialiasing;
 			case 'bf-car':
 				var tex = Paths.getSparrowAtlas('bfCar');
 				frames = tex;
@@ -367,6 +379,7 @@ class Character extends FlxSprite
 				playAnim('idle');
 
 				flipX = true;
+				antialiasing = FlxG.save.data.antialiasing;
 			case 'bf-pixel':
 				frames = Paths.getSparrowAtlas('weeb/bfPixel');
 				animation.addByPrefix('idle', 'BF IDLE', 24, false);
@@ -504,6 +517,8 @@ class Character extends FlxSprite
 				addOffset("singDOWN-alt", -30, -27);
 
 				playAnim('idle');
+
+				antialiasing = FlxG.save.data.antialiasing;
 		}
 
 		dance();
@@ -579,8 +594,6 @@ class Character extends FlxSprite
 
 		if (endFrames != null)
 			coolArray.push(endFrames);
-
-		trace(coolArray);
 		
 		return coolArray;
 	}

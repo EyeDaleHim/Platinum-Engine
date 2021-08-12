@@ -6,7 +6,6 @@ import Song.SwagSong;
  * ...
  * @author
  */
-
 typedef BPMChangeEvent =
 {
 	var stepTime:Int;
@@ -16,13 +15,11 @@ typedef BPMChangeEvent =
 
 class Conductor
 {
-	
 	public static var bpm:Int = 100;
-	// Fix Girlfriend Dance Animations???
-	public static var formerBPM:Int = 100;
 	public static var crochet:Float = ((60 / bpm) * 1000); // beats in milliseconds
 	public static var stepCrochet:Float = crochet / 4; // steps in milliseconds
 	public static var songPosition:Float;
+	public static var offsetPos:Float;
 	public static var lastSongPos:Float;
 	public static var offset:Float = 0;
 
@@ -44,7 +41,7 @@ class Conductor
 		var totalPos:Float = 0;
 		for (i in 0...song.notes.length)
 		{
-			if(song.notes[i].changeBPM && song.notes[i].bpm != curBPM)
+			if (song.notes[i].changeBPM && song.notes[i].bpm != curBPM)
 			{
 				curBPM = song.notes[i].bpm;
 				var event:BPMChangeEvent = {
@@ -64,7 +61,6 @@ class Conductor
 
 	public static function changeBPM(newBpm:Int)
 	{
-		formerBPM = bpm;
 		bpm = newBpm;
 
 		crochet = ((60 / bpm) * 1000);

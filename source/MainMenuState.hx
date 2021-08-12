@@ -34,6 +34,8 @@ class MainMenuState extends MusicBeatState
 
 	override function create()
 	{
+		Settings.init();
+		
 		#if desktop
 		// Updating Discord Rich Presence
 		DiscordClient.changePresence("In the Menus", null);
@@ -194,7 +196,7 @@ class MainMenuState extends MusicBeatState
 
 										trace("Freeplay Menu Selected");
 									case 'options':
-										FlxG.switchState(new SettingsGameplay());
+										FlxG.switchState(new SettingsMenu());
 								}
 							});
 						}

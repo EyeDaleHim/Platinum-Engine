@@ -65,6 +65,8 @@ class ChartingState extends MusicBeatState
 	var curRenderedNotes:FlxTypedGroup<Note>;
 	var curRenderedSustains:FlxTypedGroup<FlxSprite>;
 
+	var clickNotes:Bool = false;
+
 	var gridBG:FlxSprite;
 
 	var _song:SwagSong;
@@ -301,6 +303,8 @@ class ChartingState extends MusicBeatState
 			}
 		});
 
+		var cleanUp:FlxButton = new FlxButton(10, 190, "Clean Up Notes", cleanUpSection);
+
 		check_mustHitSection = new FlxUICheckBox(10, 30, null, null, "Must hit section", 100);
 		check_mustHitSection.name = 'check_mustHit';
 		check_mustHitSection.checked = true;
@@ -321,10 +325,12 @@ class ChartingState extends MusicBeatState
 		tab_group_section.add(copyButton);
 		tab_group_section.add(clearSectionButton);
 		tab_group_section.add(swapSection);
+		tab_group_section.add(cleanUp);
 
 		UI_box.addGroup(tab_group_section);
 	}
 
+	var clickNoteCheck:FlxUICheckBox;
 	var stepperSusLength:FlxUINumericStepper;
 
 	function addNoteUI():Void
@@ -338,8 +344,12 @@ class ChartingState extends MusicBeatState
 
 		var applyLength:FlxButton = new FlxButton(100, 10, 'Apply');
 
+		clickNoteCheck = new FlxUICheckBox(10, 30, null, null, 'Note Hit Sounds', 100);
+		clickNoteCheck.name = 'soundClickNote';
+
 		tab_group_note.add(stepperSusLength);
 		tab_group_note.add(applyLength);
+		tab_group_note.add(clickNoteCheck);
 
 		UI_box.addGroup(tab_group_note);
 	}
@@ -474,9 +484,29 @@ class ChartingState extends MusicBeatState
 	{
 		updateHeads();
 		curStep = recalculateSteps();
+		clickNotes = clickNoteCheck.checked;
+
+		curRenderedNotes.forEach(function(spr:FlxSprite) {
+			if (spr.y < strumLine.y && FlxG.sound.music.playing)
+			{
+				var hasBeenClicked:Bool = false;
+				
+				spr.alpha = 0.6;
+				/* someone do this for me, it justs repeats the sound
+				if (clickNotes && FlxG.sound.music.playing && !hasBeenClicked)
+				{
+					FlxG.sound.play('assets/sounds/noteHitSound' + TitleState.soundExt, 0.6);
+					hasBeenClicked = true;
+				}
+				*/
+			}
+			else
+				spr.alpha = 1;
+		});
 
 		Conductor.songPosition = FlxG.sound.music.time;
-		_song.song = typingShit.text;
+		if (!typingShit.hasFocus)
+			_song.song = typingShit.text;
 
 		strumLine.y = getYfromStrum((Conductor.songPosition - sectionStartTime()) % (Conductor.stepCrochet * _song.notes[curSection].lengthInSteps));
 
@@ -720,6 +750,29 @@ class ChartingState extends MusicBeatState
 		updateBeat();
 
 		return curStep;
+	}
+
+	// Removes Notes that are not on the grid. Doesn't count for hold notes that could be beneath the grid.
+	function cleanUpSection()
+	{
+		// do it three times to definitely remove them??
+		curRenderedNotes.forEach(function(note:Note)
+		{
+			if (note.y < gridBG.y)
+				deleteNote(note);
+		});
+
+		curRenderedNotes.forEach(function(note:Note)
+		{
+			if (note.y < gridBG.y)
+				deleteNote(note);
+		});
+
+		curRenderedNotes.forEach(function(note:Note)
+		{
+			if (note.y < gridBG.y)
+				deleteNote(note);
+		});
 	}
 
 	function resetSection(songBeginning:Bool = false):Void

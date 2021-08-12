@@ -21,13 +21,14 @@ class SettingsMenu extends MusicBeatState
 {
     var category:String = 'none';
 
-    var curOptions:Array<String> = ['options', 'gameplay', 'graphics', 'sounds'];
+    var curOptions:Array<String> = ['options', 'gameplay', 'graphics', 'reset settings'];
 
     var curSelected:Int = 0;
     var grpItems:FlxTypedGroup<Alphabet>;
     var coolString:String = "";
     var dumbBitch:FlxText;
     var blackScreen:FlxSprite;
+    var menuBG:FlxSprite;
     
     override function create()
     {   
@@ -37,7 +38,7 @@ class SettingsMenu extends MusicBeatState
         
         Settings.init();
 
-        var menuBG:FlxSprite = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
+        menuBG = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
 		menuBG.color = 0xFFea71fd;
 		menuBG.setGraphicSize(Std.int(menuBG.width * 1.1));
 		menuBG.updateHitbox();
@@ -72,6 +73,7 @@ class SettingsMenu extends MusicBeatState
 
     function changeCategory(category:String)
         {
+            /*
             this.category = category;
 
             switch (category)
@@ -81,6 +83,7 @@ class SettingsMenu extends MusicBeatState
                 default:
                     curOptions = ['options', 'gameplay', 'graphics', 'sounds'];
             }
+            */
         }
 
     function changeSelection(change:Int = 0)
@@ -116,6 +119,8 @@ class SettingsMenu extends MusicBeatState
                         coolString = "Change the way your games look.";
                     case 3:
                         coolString = "Change the way of how you hear the game's sounds.";
+                    case 4:
+                        coolString = "Reset your settings to default.";
                 }
     
                 if (item.text != 'options')
@@ -131,6 +136,17 @@ class SettingsMenu extends MusicBeatState
                 }
             }
         }
+
+    /* got lazy
+     var isInNotify:Bool = false;
+    var notifySprite:FlxSprite;
+    
+    function notifyDelete():Void
+    {
+        inInNotify = true;
+        notifySprite = new FlxSprite(FlxG.width * 0.5)
+    }
+    */
     
     override function update(elapsed:Float)
     {
@@ -142,6 +158,8 @@ class SettingsMenu extends MusicBeatState
         
         var upP = controls.UP_P;
 		var downP = controls.DOWN_P;
+        var rightP = controls.RIGHT_P;
+        var leftP = controls.LEFT_P;
 		var accepted = controls.ACCEPT;
         var back = controls.BACK;
 
@@ -154,7 +172,10 @@ class SettingsMenu extends MusicBeatState
 			changeSelection(1);
 		}
         if (back)
-            FlxG.switchState(new MainMenuState());
+        {
+           // if (!isInNotify)
+                FlxG.switchState(new MainMenuState());
+        }
         if (accepted)
         {
             switch (curSelected)
@@ -162,9 +183,11 @@ class SettingsMenu extends MusicBeatState
                 case 1:
                     FlxG.switchState(new SettingsGameplay());
                 case 2:
-                    changeCategory('graphics');
+                    FlxG.switchState(new SettingsGraphics());
                 case 3:
-                    changeCategory('sounds');
+                    Settings.reset('downscroll', true);
+                    menuBG.color = 0xFFFF2137;
+                    FlxTween.color(menuBG, 0.8, 0xFFFF2137, 0xFFea71fd, {ease: FlxEase.quintOut});
             }
         }
     }

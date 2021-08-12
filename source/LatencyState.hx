@@ -21,7 +21,7 @@ class LatencyState extends FlxState
 
 		for (i in 0...32)
 		{
-			var note:Note = new Note(Conductor.crochet * i, 1);
+			var note:Note = new Note((Conductor.stepCrochet / 1000) * i, 1);
 			noteGrp.add(note);
 		}
 

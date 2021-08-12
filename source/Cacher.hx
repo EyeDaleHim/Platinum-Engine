@@ -13,8 +13,8 @@ class Cacher
     {
         for (x in songs)
         {
-            FlxG.sound.cache('assets/songs/' + x.toLowerCase() + '/Inst' + TitleState.soundExt);
-            FlxG.sound.cache('assets/songs/' + x.toLowerCase() + '/Voices' + TitleState.soundExt);
+            FlxG.sound.cache('songs:assets/songs/' + x.toLowerCase() + '/Inst' + TitleState.soundExt);
+            FlxG.sound.cache('songs:assets/songs/' + x.toLowerCase() + '/Voices' + TitleState.soundExt);
             trace('cached ' + 'assets/songs/' + x.toLowerCase() + ' Inst' + ' and ' + 'Voices' + TitleState.soundExt);
         }
     }

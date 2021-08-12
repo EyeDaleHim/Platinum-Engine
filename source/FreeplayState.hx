@@ -18,7 +18,10 @@ using StringTools;
 
 class FreeplayState extends MusicBeatState
 {
+	public static var lastSelected:Int = 0;
+	
 	var songs:Array<SongMetadata> = [];
+	var difficulty:Array<Float> = [];
 
 	var selector:FlxText;
 	var curSelected:Int = 0;
@@ -26,6 +29,7 @@ class FreeplayState extends MusicBeatState
 
 	var scoreText:FlxText;
 	var diffText:FlxText;
+	var songDiff:FlxText;
 	var totalText:FlxText;
 	var lerpScore:Int = 0;
 	var intendedScore:Int = 0;
@@ -39,6 +43,11 @@ class FreeplayState extends MusicBeatState
 	{
 		var initSonglist = CoolUtil.coolTextFile(Paths.txt('freeplaySonglist'));
 
+		Settings.init();
+
+		if (lastSelected != 0)
+			curSelected = lastSelected;
+		
 		for (i in 0...initSonglist.length)
 		{
 			songs.push(new SongMetadata(initSonglist[i], 1, 'gf'));
@@ -79,6 +88,8 @@ class FreeplayState extends MusicBeatState
 		if (StoryMenuState.weekUnlocked[6] || isDebug)
 			addWeek(['Senpai', 'Roses', 'Thorns'], 6, ['senpai', 'senpai', 'spirit']);
 
+		difficulty = [1, 3, 5, 9, 8, 12, 7, 6, 9, 11, 10, 12, 16, 11, 13, 9, 7, 14, 12];
+
 		// LOAD MUSIC
 
 		// LOAD CHARACTERS
@@ -113,9 +124,17 @@ class FreeplayState extends MusicBeatState
 		scoreText.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.WHITE, RIGHT, OUTLINE, FlxColor.BLACK);
 		// scoreText.alignment = RIGHT;
 
-		var scoreBG:FlxSprite = new FlxSprite(scoreText.x - 6, 0).makeGraphic(Std.int(FlxG.width * 0.40), 66, 0xFF000000);
+		var scoreBG:FlxSprite = new FlxSprite(scoreText.x - 6, 0).makeGraphic(Std.int(FlxG.width * 0.60), 66, 0xFF000000);
 		scoreBG.alpha = 0.6;
 		add(scoreBG);
+
+		var infoBG:FlxSprite = new FlxSprite(scoreBG.x, 0 + scoreBG.height * 1.4).makeGraphic(Std.int(FlxG.width * 0.45), 66, 0xFF000000);
+		infoBG.alpha = 0.6;
+		add(infoBG);
+
+		songDiff = new FlxText(infoBG.x + 6, infoBG.y + 6);
+		songDiff.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.WHITE, RIGHT, OUTLINE, FlxColor.BLACK);
+		add(songDiff);
 
 		totalText = new FlxText(FlxG.width * 0.85, FlxG.height - 28, 0, "", 24);
 		totalText.setFormat(Paths.font("vcr.ttf"), 24, FlxColor.WHITE, RIGHT, OUTLINE, FlxColor.BLACK);
@@ -169,7 +188,10 @@ class FreeplayState extends MusicBeatState
 	public function addWeek(songs:Array<String>, weekNum:Int, ?songCharacters:Array<String>)
 	{
 		if (songCharacters == null)
-			songCharacters = ['bf'];
+		{
+			songCharacters = ['face'];
+			FlxG.log.error("unknown character " + songCharacters + " in song" + songs);
+		}
 
 		var num:Int = 0;
 		for (song in songs)
@@ -180,10 +202,12 @@ class FreeplayState extends MusicBeatState
 				num++;
 		}
 	}
-
+	
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
+
+		lastSelected = curSelected;
 
 		if (FlxG.sound.music.volume < 0.7)
 		{
@@ -191,6 +215,7 @@ class FreeplayState extends MusicBeatState
 		}
 
 		totalText.text = curSelected + 1 + " / " + songs.length + " Songs";
+		songDiff.text = "Difficulty: " + difficulty[curSelected];
 
 		var coolLerpScore:Int = Math.floor(FlxMath.lerp(lerpScore, intendedScore, 0.4));
 		var coolScore:String = FlxStringUtil.formatMoney(coolLerpScore, false, true);
@@ -236,6 +261,7 @@ class FreeplayState extends MusicBeatState
 			PlayState.storyDifficulty = curDifficulty;
 
 			PlayState.storyWeek = songs[curSelected].week;
+			PlayState.lastSelected = lastSelected;
 			trace('CUR WEEK' + PlayState.storyWeek);
 			trace(poop, songs[curSelected].songName.toLowerCase());
 			LoadingState.loadAndSwitchState(new PlayState());
@@ -326,6 +352,7 @@ class SongMetadata
 	public var songName:String = "";
 	public var week:Int = 0;
 	public var songCharacter:String = "";
+	public var difficulty:Float = 0;
 
 	public function new(song:String, week:Int, songCharacter:String)
 	{

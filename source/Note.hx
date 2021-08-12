@@ -107,7 +107,7 @@ class Note extends FlxSprite
 
 				setGraphicSize(Std.int(width * 0.7));
 				updateHitbox();
-				antialiasing = true;
+				antialiasing = FlxG.save.data.antialiasing;
 		}
 
 		switch (noteData)
@@ -131,7 +131,7 @@ class Note extends FlxSprite
 		if (isSustainNote && prevNote != null)
 		{
 			noteScore * 0.2;
-			alpha = 0.6;
+			alpha = 1;
 
 			x += width / 2;
 
@@ -168,13 +168,36 @@ class Note extends FlxSprite
 						prevNote.animation.play('redhold');
 				}
 
+				// do it twice to absolutely flip them??
+				flipY = FlxG.save.data.downscroll;
 				flipY = FlxG.save.data.downscroll;
 
-				prevNote.scale.y *= (Conductor.stepCrochet / 100 * 1.5 * PlayState.SONG.speed);
+				if (FlxG.save.data.downscroll)
+				{
+					prevNote.scale.y *= (((Conductor.stepCrochet / 100) + 0.3) * 1.5 * PlayState.SONG.speed);
+				}
+				else
+				{
+					// ALL IT TOOK WAS 0.91 WTCDFFFFFF
+					prevNote.scale.y *= (((Conductor.stepCrochet / 100) + 0.91) * 1.5 * PlayState.SONG.speed);
+				}
 				prevNote.updateHitbox();
 				// prevNote.setGraphicSize();
 			}
 		}
+	}
+
+	public function updateSustainScale():Void
+	{
+		if (FlxG.save.data.downscroll)
+			{
+				prevNote.scale.y *= (((Conductor.stepCrochet / 100) + 0.3) * 1.5 * PlayState.SONG.speed);
+			}
+			else
+			{
+				// ALL IT TOOK WAS 0.91 WTCDFFFFFF
+				prevNote.scale.y *= (((Conductor.stepCrochet / 100) + 0.91) * 1.5 * PlayState.SONG.speed);
+			}
 	}
 
 	override function update(elapsed:Float)

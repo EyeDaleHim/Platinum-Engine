@@ -1,5 +1,6 @@
 package;
 
+import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.graphics.frames.FlxAtlasFrames;
 
@@ -15,6 +16,8 @@ class MenuCharacter extends FlxSprite
 
 		var tex = Paths.getSparrowAtlas('campaign_menu_UI_characters');
 		frames = tex;
+
+		antialiasing = FlxG.save.data.antialiasing;
 
 		animation.addByPrefix('bf', "BF idle dance white", 24);
 		animation.addByPrefix('bfConfirm', 'BF HEY!!', 24, false);

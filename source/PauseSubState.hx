@@ -17,7 +17,7 @@ class PauseSubState extends MusicBeatSubstate
 {
 	public var grpMenuShit:FlxTypedGroup<Alphabet>;
 	public var menuItems:Array<String> = ['Resume', 'Restart Song', 'Change difficulty', 'Exit to menu'];
-	
+
 	var curSelected:Int = 0;
 	var selectedString:String = '';
 	var daSelected:String;
@@ -79,7 +79,7 @@ class PauseSubState extends MusicBeatSubstate
 			songText.targetY = i;
 			grpMenuShit.add(songText);
 		}
-		
+
 		selectTxt = new FlxText(0, 0, FlxG.width / 2.5, "", 24);
 		selectTxt.setFormat(Paths.font("vcr.ttf"), 24);
 		add(selectTxt);
@@ -92,7 +92,7 @@ class PauseSubState extends MusicBeatSubstate
 	override function update(elapsed:Float)
 	{
 		daSelected = menuItems[curSelected];
-		
+
 		if (pauseMusic.volume < 0.5)
 			pauseMusic.volume += 0.01 * elapsed;
 
@@ -118,11 +118,11 @@ class PauseSubState extends MusicBeatSubstate
 
 		selectTxt.text = selectedString;
 
-		if (upP/* || focusUp */)
+		if (upP /* || focusUp */)
 		{
 			changeSelection(-1);
 		}
-		if (downP/* || focusDown */)
+		if (downP /* || focusDown */)
 		{
 			changeSelection(1);
 		}
@@ -160,11 +160,10 @@ class PauseSubState extends MusicBeatSubstate
 					var poop:String = Highscore.formatSong(PlayState.SONG.song.toLowerCase(), PlayState.storyDifficulty);
 
 					trace(poop);
-		
+
 					trace(poop, menuItems[curSelected].toLowerCase());
 					PlayState.SONG = Song.loadFromJson(poop, PlayState.SONG.song.toLowerCase());
 
-		
 					LoadingState.loadAndSwitchState(new PlayState());
 				case 'Back':
 					curSelected = 0;
@@ -182,8 +181,6 @@ class PauseSubState extends MusicBeatSubstate
 		}
 	}
 
-
-
 	override function destroy()
 	{
 		pauseMusic.destroy();
@@ -192,64 +189,64 @@ class PauseSubState extends MusicBeatSubstate
 	}
 
 	function changeItems(focus:Int):Void
+	{
+		switch (focus)
 		{
-			switch (focus)
-			{
-				case 0:
-					switch (PlayState.isStoryMode)
-					{
-						case false:
-							menuItems = ['Resume', 'Restart Song', 'Change difficulty', 'Exit to menu'];
-						case true:
-							// i understand but you can't do that
-							menuItems = ['Resume', 'Restart Song', 'Exit to menu'];
-					}
-				case 1:
-					menuItems = ['EASY', "NORMAL", "HARD", 'Back'];
-			}
-	
-			grpMenuShit.clear();
-	
-			curSelected = 0;
-			changeSelection();
-	
-			for (i in 0...menuItems.length)
+			case 0:
+				switch (PlayState.isStoryMode)
 				{
-					var songText:Alphabet = new Alphabet(0, (70 * i) + 30, menuItems[i], true, false);
-					songText.isMenuItem = true;
-					songText.targetY = i;
-					grpMenuShit.add(songText);
+					case false:
+						menuItems = ['Resume', 'Restart Song', 'Change difficulty', 'Exit to menu'];
+					case true:
+						// i understand but you can't do that
+						menuItems = ['Resume', 'Restart Song', 'Exit to menu'];
 				}
-			// call it twice to fix white text??
-			changeSelection();
+			case 1:
+				menuItems = ['EASY', "NORMAL", "HARD", 'Back'];
 		}
+
+		grpMenuShit.clear();
+
+		curSelected = 0;
+		changeSelection();
+
+		for (i in 0...menuItems.length)
+		{
+			var songText:Alphabet = new Alphabet(0, (70 * i) + 30, menuItems[i], true, false);
+			songText.isMenuItem = true;
+			songText.targetY = i;
+			grpMenuShit.add(songText);
+		}
+		// call it twice to fix white text??
+		changeSelection();
+	}
 
 	function changeSelection(change:Int = 0):Void
 	{
 		curSelected += change;
 
-			if (curSelected < 0)
+		if (curSelected < 0)
 			curSelected = menuItems.length - 1;
-			if (curSelected >= menuItems.length)
+		if (curSelected >= menuItems.length)
 			curSelected = 0;
 
-			var bullShit:Int = 0;
+		var bullShit:Int = 0;
 
-			for (item in grpMenuShit.members)
+		for (item in grpMenuShit.members)
+		{
+			item.targetY = bullShit - curSelected;
+			bullShit++;
+
+			item.alpha = 0.6;
+			// item.setGraphicSize(Std.int(item.width * 0.8));
+			item.selected = false;
+
+			if (item.targetY == 0)
 			{
-				item.targetY = bullShit - curSelected;
-				bullShit++;
-
-				item.alpha = 0.6;
-				// item.setGraphicSize(Std.int(item.width * 0.8));
-				item.selected = false;
-
-				if (item.targetY == 0)
-				{
-					item.alpha = 1;
-					// item.setGraphicSize(Std.int(item.width));
-					item.selected = true;
-				}
+				item.alpha = 1;
+				// item.setGraphicSize(Std.int(item.width));
+				item.selected = true;
 			}
+		}
 	}
 }

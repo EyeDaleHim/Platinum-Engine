@@ -122,8 +122,12 @@ class DialogueBox extends FlxSpriteGroup
 		box.screenCenter(X);
 		portraitLeft.screenCenter(X);
 
+		
 		handSelect = new FlxSprite(FlxG.width * 0.9, FlxG.height * 0.9).loadGraphic(Paths.image('weeb/pixelUI/hand_textbox'));
+		handSelect.scale.set(6, 6);
+		handSelect.visible = false;
 		add(handSelect);
+		
 
 
 		if (!talkingRight)
@@ -201,6 +205,7 @@ class DialogueBox extends FlxSpriteGroup
 						portraitLeft.visible = false;
 						portraitRight.visible = false;
 						swagDialogue.alpha -= 1 / 5;
+						handSelect.alpha -= 1 / 5;
 						dropText.alpha = swagDialogue.alpha;
 					}, 5);
 
@@ -223,9 +228,16 @@ class DialogueBox extends FlxSpriteGroup
 
 	var isEnding:Bool = false;
 
+	function makeVisible():Void
+	{
+		// why do we have to make this shit on a function
+		handSelect.visible = true;
+	}
+
 	function startDialogue():Void
 	{
 		cleanDialog();
+		handSelect.visible = false;
 		// var theDialog:Alphabet = new Alphabet(0, 70, dialogueList[0], false, true);
 		// dialogue = theDialog;
 		// add(theDialog);
@@ -233,6 +245,10 @@ class DialogueBox extends FlxSpriteGroup
 		// swagDialogue.text = ;
 		swagDialogue.resetText(dialogueList[0]);
 		swagDialogue.start(0.04, true);
+
+
+		// bruh
+		swagDialogue.completeCallback = makeVisible;
 
 		switch (curCharacter)
 		{
