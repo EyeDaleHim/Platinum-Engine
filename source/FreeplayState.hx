@@ -71,13 +71,13 @@ class FreeplayState extends MusicBeatState
 		#end
 
 		if (StoryMenuState.weekUnlocked[2] || isDebug)
-			addWeek(['Bopeebo', 'Fresh', 'Dadbattle'], 1, ['dad']);
+			addWeek(['Bopeebo', 'Fresh', 'Dad-battle'], 1, ['dad']);
 
 		if (StoryMenuState.weekUnlocked[2] || isDebug)
 			addWeek(['Spookeez', 'South', 'Monster'], 2, ['spooky', 'spooky', 'monster-christmas']);
 
 		if (StoryMenuState.weekUnlocked[3] || isDebug)
-			addWeek(['Pico', 'Philly', 'Blammed'], 3, ['pico']);
+			addWeek(['Pico', 'Philly-Nice', 'Blammed'], 3, ['pico']);
 
 		if (StoryMenuState.weekUnlocked[4] || isDebug)
 			addWeek(['Satin-Panties', 'High', 'Milf'], 4, ['mom']);
@@ -201,6 +201,7 @@ class FreeplayState extends MusicBeatState
 			if (songCharacters.length != 1)
 				num++;
 		}
+
 	}
 	
 	override function update(elapsed:Float)
@@ -209,10 +210,16 @@ class FreeplayState extends MusicBeatState
 
 		lastSelected = curSelected;
 
-		if (FlxG.sound.music.volume < 0.7)
-		{
-			FlxG.sound.music.volume += 0.5 * FlxG.elapsed;
-		}
+		if (FlxG.save.data.musicVolume > 70)
+			{
+				if (FlxG.sound.music.volume < 0.7)
+					FlxG.sound.music.volume += 0.5 * FlxG.elapsed;
+			}
+			else
+			{
+				if (FlxG.sound.music.volume < FlxG.save.data.musicVolume / 100)
+					FlxG.sound.music.volume += 0.5 * FlxG.elapsed;
+			}
 
 		totalText.text = curSelected + 1 + " / " + songs.length + " Songs";
 		songDiff.text = "Difficulty: " + difficulty[curSelected];
@@ -252,11 +259,23 @@ class FreeplayState extends MusicBeatState
 
 		if (accepted)
 		{
-			var poop:String = Highscore.formatSong(songs[curSelected].songName.toLowerCase(), curDifficulty);
+			var coolSong:String = '';
+			switch (songs[curSelected].songName.toLowerCase())
+			{
+				case 'philly-nice':
+					coolSong = 'philly';
+				case 'dad-battle':
+					coolSong = 'dadbattle';
+				default:
+					coolSong = songs[curSelected].songName.toLowerCase();
+			}
+			
+			var poop:String = Highscore.formatSong(coolSong, curDifficulty);
 
+			trace(coolSong);
 			trace(poop);
 
-			PlayState.SONG = Song.loadFromJson(poop, songs[curSelected].songName.toLowerCase());
+			PlayState.SONG = Song.loadFromJson(poop, coolSong);
 			PlayState.isStoryMode = false;
 			PlayState.storyDifficulty = curDifficulty;
 
@@ -276,6 +295,11 @@ class FreeplayState extends MusicBeatState
 			curDifficulty = 2;
 		if (curDifficulty > 2)
 			curDifficulty = 0;
+
+		if (FlxG.save.data.soundVolume > 0.4)
+			FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
+		else
+			FlxG.sound.play(Paths.sound('scrollMenu'), FlxG.save.data.soundVolume);
 
 		#if !switch
 		intendedScore = Highscore.getScore(songs[curSelected].songName, curDifficulty);
@@ -298,6 +322,10 @@ class FreeplayState extends MusicBeatState
 	{
 		// NGio.logEvent('Fresh');
 		// FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
+		if (FlxG.save.data.soundVolume > 0.4)
+			FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
+		else
+			FlxG.sound.play(Paths.sound('scrollMenu'), FlxG.save.data.soundVolume);
 
 		curSelected += change;
 
