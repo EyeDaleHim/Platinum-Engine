@@ -29,7 +29,7 @@ class MusicBeatState extends FlxUIState
 
 	override function update(elapsed:Float)
 	{
-		//everyStep();
+		// everyStep();
 		Conductor.offsetPos = Conductor.songPosition - Conductor.offset;
 		var oldStep:Int = curStep;
 
@@ -74,6 +74,6 @@ class MusicBeatState extends FlxUIState
 
 	public function beatHit():Void
 	{
-		//do literally nothing dumbass
+		// do literally nothing dumbass
 	}
 }
