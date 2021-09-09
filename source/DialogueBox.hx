@@ -42,10 +42,16 @@ class DialogueBox extends FlxSpriteGroup
 		{
 			case 'senpai':
 				FlxG.sound.playMusic(Paths.music('Lunchbox'), 0);
-				FlxG.sound.music.fadeIn(1, 0, 0.8);
+				if (FlxG.save.data.soundVolume > 80)
+					FlxG.sound.music.fadeIn(1, 0, 0.8);
+				else
+					FlxG.sound.music.fadeIn(1, 0, FlxG.save.data.soundVolume / 100);
 			case 'thorns':
 				FlxG.sound.playMusic(Paths.music('LunchboxScary'), 0);
-				FlxG.sound.music.fadeIn(1, 0, 0.8);
+				if (FlxG.save.data.soundVolume > 80)
+					FlxG.sound.music.fadeIn(1, 0, 0.8);
+				else
+					FlxG.sound.music.fadeIn(1, 0, FlxG.save.data.soundVolume / 100);
 		}
 
 		bgFade = new FlxSprite(-200, -200).makeGraphic(Std.int(FlxG.width * 1.3), Std.int(FlxG.height * 1.3), 0xFFB3DFd8);
@@ -74,7 +80,7 @@ class DialogueBox extends FlxSpriteGroup
 				box.animation.addByIndices('normal', 'Text Box Appear', [4], "", 24);
 			case 'roses':
 				hasDialog = true;
-				FlxG.sound.play(Paths.sound('ANGRY_TEXT_BOX'));
+				FlxG.sound.play(Paths.sound('ANGRY_TEXT_BOX'), FlxG.save.data.soundVolume / 100);
 
 				box.frames = Paths.getSparrowAtlas('weeb/pixelUI/dialogueBox-senpaiMad');
 				box.animation.addByPrefix('normalOpen', 'SENPAI ANGRY IMPACT SPEECH', 24, false);
@@ -143,7 +149,10 @@ class DialogueBox extends FlxSpriteGroup
 		swagDialogue = new FlxTypeText(240, 500, Std.int(FlxG.width * 0.6), "", 32);
 		swagDialogue.font = 'Pixel Arial 11 Bold';
 		swagDialogue.color = 0xFF3F2021;
-		swagDialogue.sounds = [FlxG.sound.load(Paths.sound('pixelText'), 0.6)];
+		if (FlxG.save.data.soundVolume > 60)
+			swagDialogue.sounds = [FlxG.sound.load(Paths.sound('pixelText'), 0.6)];
+		else
+			swagDialogue.sounds = [FlxG.sound.load(Paths.sound('pixelText'), FlxG.save.data.soundVolume / 100)];
 		add(swagDialogue);
 
 		dialogue = new Alphabet(0, 80, "", false, true);
@@ -187,7 +196,10 @@ class DialogueBox extends FlxSpriteGroup
 		{
 			remove(dialogue);
 				
-			FlxG.sound.play(Paths.sound('clickText'), 0.8);
+			if (FlxG.save.data.soundVolume > 80)
+				FlxG.sound.play(Paths.sound('clickText'), 0.8);
+			else
+				FlxG.sound.play(Paths.sound('clickText'), FlxG.save.data.soundVolume / 100);
 
 			if (dialogueList[1] == null && dialogueList[0] != null)
 			{
