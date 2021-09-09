@@ -4,6 +4,7 @@ import Controls.Control;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxSubState;
+import flixel.FlxCamera;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.input.keyboard.FlxKey;
@@ -27,12 +28,26 @@ class PauseSubState extends MusicBeatSubstate
 
 	var focus:Int = 0;
 
+	// fix rotation camera shit
+	var pauseCamera:FlxCamera;
+
+	var renameSong:String = '';
+	var wasRenamed:Bool = true;
+
 	public function new(x:Float, y:Float)
 	{
 		super();
 
 		if (PlayState.isStoryMode)
 			menuItems = ['Resume', 'Restart Song', 'Exit to menu'];
+
+		#if debug
+		menuItems.push('botplay');
+		#end
+
+		pauseCamera = new FlxCamera(0, 0, FlxG.width, FlxG.height, 1);
+		pauseCamera.antialiasing = true;
+		add(pauseCamera);
 
 		pauseMusic = new FlxSound().loadEmbedded(Paths.music('breakfast'), true, true);
 		pauseMusic.volume = 0;
@@ -46,7 +61,20 @@ class PauseSubState extends MusicBeatSubstate
 		add(bg);
 
 		var levelInfo:FlxText = new FlxText(20, 15, 0, "", 32);
-		levelInfo.text += PlayState.SONG.song;
+		
+		switch (PlayState.SONG.song.toLowerCase())
+		{
+			case 'dadbattle':
+				renameSong = 'Dad Battle';
+			case 'philly':
+				renameSong = 'Philly Nice';
+			default:
+				wasRenamed = false;
+		}
+		if (!wasRenamed)
+			levelInfo.text += PlayState.SONG.song;
+		else
+			levelInfo.text += renameSong;
 		levelInfo.scrollFactor.set();
 		levelInfo.setFormat(Paths.font("vcr.ttf"), 32);
 		levelInfo.updateHitbox();
@@ -150,6 +178,13 @@ class PauseSubState extends MusicBeatSubstate
 						// use it if we somehow broke lmao
 						FlxG.switchState(new MainMenuState());
 					}
+				case 'botplay':
+					if (FlxG.save.data.botplay == null)
+						FlxG.save.data.botplay = true;
+					else
+						FlxG.save.data.botplay = !FlxG.save.data.botplay;
+
+					LoadingState.loadAndSwitchState(new PlayState());
 				case 'EASY' | "NORMAL" | "HARD":
 					if (daSelected == 'EASY')
 						PlayState.storyDifficulty = 0;
