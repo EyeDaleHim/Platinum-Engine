@@ -39,6 +39,8 @@ class SettingsGameplay extends MusicBeatState
 		FlxG.save.data.noteOffset
 	];
 
+	var defaultValues:Array<Dynamic> = [null, false, false, 'simple', 'old', 0];
+
 	var curSelected:Int = 0;
 	var grpItems:FlxTypedGroup<Alphabet>;
 
@@ -97,7 +99,12 @@ class SettingsGameplay extends MusicBeatState
 		var realChange:Int = curSelected + change;
 
 		if (curSelected != 0)
-			FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
+		{
+			if (FlxG.save.data.soundVolume > 0.4)
+				FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
+			else
+				FlxG.sound.play(Paths.sound('scrollMenu'), FlxG.save.data.soundVolume);
+		}
 
 		curSelected += change;
 
@@ -149,6 +156,12 @@ class SettingsGameplay extends MusicBeatState
 
 	function changeItem(item:Dynamic, selected:Int, isOffset:Bool = false, dir:Bool = false)
 	{
+		if (item == null)
+		{
+			changeableValues[selected] = defaultValues[selected];
+			trace('lol null error' + changeableValues[selected]);
+		}
+
 		if ((item is Bool))
 			item = !item;
 		if ((item is Float))
@@ -188,9 +201,9 @@ class SettingsGameplay extends MusicBeatState
 
 		changeableValues[selected] = item;
 		// do debug to fix performance?
-        #if debug
-        trace(changeableValues);
-        #end
+		#if debug
+		trace(changeableValues);
+		#end
 
 		saveSettings(selected);
 	}

@@ -8,9 +8,15 @@ class Settings
     public static var accuracy:String;
     public static var ghostTap:Bool;
     public static var scoreType:String;
+    public static var noteOffset:Float;
+
     public static var quality:String;
     public static var antialiasing:Bool;
-    public static var noteOffset:Float;
+
+    public static var musicVolume:Float;
+    public static var soundVolume:Float;
+    public static var vocalVolume:Float;
+
     public static var upBind:String;
     public static var downBind:String;
     public static var leftBind:String;
@@ -33,10 +39,19 @@ class Settings
             FlxG.save.data.scoreType = 'old';
         if (FlxG.save.data.noteOffset == null)
             FlxG.save.data.noteOffset = 0;
+
         if (FlxG.save.data.quality == null)
             FlxG.save.data.quality == 'medium';
         if (FlxG.save.data.antialiasing)
             FlxG.save.data.antialiasing = true;
+
+        if (FlxG.save.data.musicVolume == null)
+            FlxG.save.data.musicVolume = 100;
+        if (FlxG.save.data.soundVolume == null)
+            FlxG.save.data.soundVolume = 100;
+        if (FlxG.save.data.vocalVolume == null)
+            FlxG.save.data.vocalVolume = 100;
+
         if (FlxG.save.data.upBind == null && FlxG.save.data.downBind == null && FlxG.save.data.leftBind == null && FlxG.save.data.rightBind == null && FlxG.save.data.resetBind == null)
         {
             useDefaults = true;
@@ -63,6 +78,9 @@ class Settings
         noteOffset = FlxG.save.data.noteOffset;
         quality = FlxG.save.data.quality;
         antialiasing = FlxG.save.data.antialiasing;
+        musicVolume = FlxG.save.data.musicVolume;
+        soundVolume = FlxG.save.data.soundVolume;
+        vocalVolume = FlxG.save.data.vocalVolume;
         Conductor.offset = noteOffset;
         upBind = FlxG.save.data.upBind;
         downBind = FlxG.save.data.downBind;
@@ -73,7 +91,9 @@ class Settings
         trace([downscroll, accuracy, ghostTap, scoreType, noteOffset]);
         trace('GRAPHICS:');
         trace([quality, antialiasing]);
-        trace(quality);
+        trace('SOUNDS:');
+        trace([musicVolume, soundVolume, vocalVolume]);
+        trace('KEYBINDS:');
         trace([leftBind, downBind, upBind, rightBind]);
     }
 
@@ -124,8 +144,15 @@ class Settings
             case 'antialiasing':
                 FlxG.save.data.antialiasing = coolBool;
                 antialiasing = FlxG.save.data.antialiasing;
-            case 'volume':
-                FlxG.save.data.volume = coolFloat;
+            case 'musicVolume':
+                FlxG.save.data.musicVolume = coolFloat;
+                musicVolume = FlxG.save.data.musicVolume;
+            case 'soundVolume':
+                FlxG.save.data.soundVolume = coolFloat;
+                soundVolume = FlxG.save.data.soundVolume;
+            case 'vocalVolume':
+                FlxG.save.data.vocalVolume = coolFloat;
+                vocalVolume = FlxG.save.data.vocalVolume;
             case 'keyBinds':
                 if (keyBind == 'up')
                     FlxG.save.data.upBind = setting;
@@ -160,14 +187,23 @@ class Settings
                     FlxG.save.data.quality = 'medium';
                 case 'antialiasing':
                     FlxG.save.data.antialiasing = true;
+                case 'volume':
+                    FlxG.save.data.musicVolume = 1;
+                    FlxG.save.data.soundVolume = 1;
+                    FlxG.save.data.vocalVolume = 1;
                 default:
                     // nullfying them doesnt work fuck you
                     FlxG.save.data.downscroll = false;
                     FlxG.save.data.ghostTap = false;
                     FlxG.save.data.accuracy = 'none';
                     FlxG.save.data.scoreType = 'old';
+
                     FlxG.save.data.quality = 'medium';
                     FlxG.save.data.antialiasing = true;
+
+                    FlxG.save.data.musicVolume = 1;
+                    FlxG.save.data.soundVolume = 1;
+                    FlxG.save.data.vocalVolume = 1;
             }
 
             trace('reset ' + target);
@@ -182,6 +218,9 @@ class Settings
             FlxG.save.data.quality = 'medium';
             FlxG.save.data.antialiasing = true;
             FlxG.save.data.noteOffset = Conductor.offset = 0;
+            FlxG.save.data.musicVolume = 100;
+            FlxG.save.data.soundVolume = 100;
+            FlxG.save.data.vocalVolume = 100;
 
             trace('reset all');
         }

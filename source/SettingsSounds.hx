@@ -3,6 +3,7 @@ package;
 import flixel.FlxG;
 import flixel.FlxState;
 import flixel.FlxSprite;
+import flixel.FlxObject;
 import flixel.addons.transition.FlxTransitionSprite.GraphicTransTileDiamond;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.addons.transition.TransitionData;
@@ -17,14 +18,18 @@ import flixel.tweens.FlxTween;
 import flixel.tweens.FlxEase;
 import flixel.system.FlxSound;
 import flixel.system.ui.FlxSoundTray;
+import flixel.addons.ui.FlxSlider;
 
 using StringTools;
 
 class SettingsSounds extends MusicBeatState
 {
-    var curOptions:Array<String> =  ['sounds settings', 'volume', ''];
+    var curOptions:Array<String> =  ['sounds settings', 'music volume', 'sound volume', 'vocal volume'];
     // note to self: null values should not be changed
-    var changeableValues:Array<Dynamic> = [null, FlxG.save.data.volume, ];
+    var changeableValues:Array<Dynamic> = [null, FlxG.save.data.musicVolume, FlxG.save.data.soundVolume,
+    FlxG.save.data.vocalVolume, null];
+
+    var defaultValues:Array<Dynamic> = [null, 100, 100, 100, null];
 
     var curSelected:Int = 0;
     var grpItems:FlxTypedGroup<Alphabet>;
@@ -34,14 +39,11 @@ class SettingsSounds extends MusicBeatState
 
     var valueText:FlxText;
     var stringOfBool:String = '';
-    var soundTray:FlxSoundTray;
     
     override function create()
     {
         // Assuming settings wasn't initalized yet
         Settings.init();
-
-        soundTray = new FlxSoundTray();
         
         var menuBG:FlxSprite = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
 		menuBG.color = 0xFF5EBCFF;
@@ -86,7 +88,12 @@ class SettingsSounds extends MusicBeatState
             var realChange:Int = curSelected + change;
             
             if (curSelected != 0)
-                FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
+            {
+                if (FlxG.save.data.soundVolume > 0.4)
+                    FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
+                else
+                    FlxG.sound.play(Paths.sound('scrollMenu'), FlxG.save.data.soundVolume);
+            }
     
             curSelected += change;
 
@@ -109,10 +116,11 @@ class SettingsSounds extends MusicBeatState
                 switch (curSelected)
                 {
                     case 1:
-                        coolString = "Sets the quality of playing the game, higher is better but more performance-heavy.";
-                        soundTray.show();
+                        coolString = "Set the music volume.";
                     case 2:
-                        coolString = "Smoothens jagged edges on curved lines or diagonals.";
+                        coolString = "Set the sound volume.";
+                    case 3:
+                        coolString = "Set the vocals volume during gameplay.";
                 }
     
                 if (item.text != 'sounds settings')
@@ -131,6 +139,12 @@ class SettingsSounds extends MusicBeatState
 
         function changeItem(item:Dynamic, selected:Int, isOffset:Bool = false, dir:Bool = false)
         {
+            if (item == null)
+                {
+                    changeableValues[selected] = defaultValues[selected];
+                    trace('lol null error' + changeableValues[selected]);
+                }
+            
             if ((item is Bool))
                 item = !item;
             if ((item is Float))
@@ -138,11 +152,27 @@ class SettingsSounds extends MusicBeatState
                     if (isOffset)
                     {
                         if (!dir)
-                            item -= 10;
+                        {
+                            if (!FlxG.keys.pressed.SHIFT)
+                                item -= 10;
+                            else
+                                item -= 1;
+                        }
                         else
-                            item += 10;
+                        {
+                            if (!FlxG.keys.pressed.SHIFT)
+                                item += 10;
+                            else
+                                item += 1;
+                        }
                     }
                 }
+
+            // failsafe
+            if (item > 100)
+                item = 100;
+            if (item < 0)
+                item = 0;
 
             trace(item);
 
@@ -159,10 +189,14 @@ class SettingsSounds extends MusicBeatState
         switch (selected)
         {
             case 1:
-                valueString = 'volume';
+                valueString = 'musicVolume';
+            case 2:
+                valueString = 'soundVolume';
+            case 3:
+                valueString = 'vocalVolume';
         }
         
-        Settings.save(changeableValues[selected] / 100, valueString);
+        Settings.save(changeableValues[selected], valueString);
     }
 
     var wasNotWarn:Bool = false;
@@ -174,9 +208,14 @@ class SettingsSounds extends MusicBeatState
             super.update(elapsed);
 
             if (wasNotWarn)
-                    fadeTime += elapsed * 10;
+                fadeTime += elapsed * 10;
 
-            soundTray.update(elapsed);
+            FlxG.sound.music.volume = FlxG.save.data.musicVolume / 100;
+
+            if (changeableValues[curSelected] < 0)
+                changeableValues[curSelected] = 0;
+            if (changeableValues[curSelected] > 100)
+                changeableValues[curSelected] = 100;
 
             var someString:String = changeableValues[curSelected];
 
@@ -185,6 +224,9 @@ class SettingsSounds extends MusicBeatState
 
             if (fadeTime > 30)
                 warningText.alpha -= elapsed * 10;
+
+            if (!FlxG.mouse.visible)
+                FlxG.mouse.visible = true;
 
             valueText.y = Math.floor(FlxMath.lerp(valueText.y, FlxG.height * 0.8, 0.2));
             
