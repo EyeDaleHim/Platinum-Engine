@@ -7,6 +7,7 @@ import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.addons.transition.FlxTransitionableState;
+// might do this shit later: import flixel.addons.display.FlxBackdrop;
 import flixel.effects.FlxFlicker;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.group.FlxGroup.FlxTypedGroup;
@@ -35,7 +36,7 @@ class MainMenuState extends MusicBeatState
 	override function create()
 	{
 		Settings.init();
-		
+
 		#if desktop
 		// Updating Discord Rich Presence
 		DiscordClient.changePresence("In the Menus", null);
@@ -90,7 +91,7 @@ class MainMenuState extends MusicBeatState
 			menuItem.ID = i;
 			menuItem.screenCenter(X);
 			menuItems.add(menuItem);
-			menuItem.scrollFactor.set();
+			menuItem.scrollFactor.set(0.02, 0.02);
 			menuItem.antialiasing = true;
 		}
 
@@ -113,35 +114,42 @@ class MainMenuState extends MusicBeatState
 	var selectedSomethin:Bool = false;
 
 	override function update(elapsed:Float)
-	{	
-		if (FlxG.sound.music.volume < 0.8)
+	{
+		if (FlxG.save.data.musicVolume == 100)
 		{
-			FlxG.sound.music.volume += 0.5 * FlxG.elapsed;
+			if (FlxG.sound.music.volume < 0.8)
+				FlxG.sound.music.volume += 0.5 * FlxG.elapsed;
+		}
+		else
+		{
+			if (FlxG.sound.music.volume < FlxG.save.data.musicVolume / 100)
+				FlxG.sound.music.volume += 0.5 * FlxG.elapsed;
 		}
 
 		if (!selectedSomethin)
 		{
 			if (controls.UP_P)
 			{
-				FlxG.sound.play(Paths.sound('scrollMenu'));
+				FlxG.sound.play(Paths.sound('scrollMenu'), FlxG.save.data.soundVolume);
 				changeItem(-1);
 			}
 
 			if (controls.DOWN_P)
 			{
-				FlxG.sound.play(Paths.sound('scrollMenu'));
+				FlxG.sound.play(Paths.sound('scrollMenu'), FlxG.save.data.soundVolume);
 				changeItem(1);
 			}
 
-			#if debug
-			if (controls.RIGHT_P)
-			{
-				var code:Int = 0;
-				
-				trace('exited game with code of ' + code);
-				Sys.exit(code);
-			}
-			#end
+			/*
+				#if debug
+				if (controls.RIGHT_P)
+				{
+					var code:Int = 0;
+					
+					trace('exited game with code of ' + code);
+					Sys.exit(code);
+				}
+				#end */
 
 			if (controls.BACK)
 			{
@@ -152,7 +160,7 @@ class MainMenuState extends MusicBeatState
 			{
 				FlxTransitionableState.skipNextTransIn = false;
 				FlxTransitionableState.skipNextTransOut = false;
-				
+
 				if (optionShit[curSelected] == 'donate')
 				{
 					#if linux
@@ -164,7 +172,7 @@ class MainMenuState extends MusicBeatState
 				else
 				{
 					selectedSomethin = true;
-					FlxG.sound.play(Paths.sound('confirmMenu'));
+					FlxG.sound.play(Paths.sound('confirmMenu'), FlxG.save.data.soundVolume);
 
 					FlxFlicker.flicker(magenta, 1.1, 0.15, false);
 
@@ -172,13 +180,17 @@ class MainMenuState extends MusicBeatState
 					{
 						if (curSelected != spr.ID)
 						{
-							FlxTween.tween(spr, {alpha: 0}, 0.4, {
+							FlxTween.tween(spr, {alpha: 0}, 1, {
 								ease: FlxEase.quadOut,
 								onComplete: function(twn:FlxTween)
 								{
 									spr.kill();
 								}
 							});
+
+							spr.acceleration.y = 550;
+							spr.velocity.y -= FlxG.random.int(140, 175);
+							spr.velocity.x -= FlxG.random.int(0, 10);
 						}
 						else
 						{
