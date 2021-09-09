@@ -110,7 +110,7 @@ class StoryMenuState extends MusicBeatState
 
 		grpLocks = new FlxTypedGroup<FlxSprite>();
 		add(grpLocks);
-		
+
 		#if desktop
 		// Updating Discord Rich Presence
 		DiscordClient.changePresence("In the Menus", null);
@@ -139,7 +139,7 @@ class StoryMenuState extends MusicBeatState
 				grpLocks.add(lock);
 			}
 		}
-		
+
 		for (char in 0...3)
 		{
 			var weekCharacterThing:MenuCharacter = new MenuCharacter((FlxG.width * 0.25) * (1 + char) - 150, weekCharacters[curWeek][char]);
@@ -223,6 +223,17 @@ class StoryMenuState extends MusicBeatState
 
 	override function update(elapsed:Float)
 	{
+		if (FlxG.save.data.musicVolume == 100)
+		{
+			if (FlxG.sound.music.volume < 0.8)
+				FlxG.sound.music.volume += 0.5 * FlxG.elapsed;
+		}
+		else
+		{
+			if (FlxG.sound.music.volume < FlxG.save.data.musicVolume / 100)
+				FlxG.sound.music.volume += 0.5 * FlxG.elapsed;
+		}
+
 		// scoreText.setFormat('VCR OSD Mono', 32);
 		lerpScore = Math.floor(FlxMath.lerp(lerpScore, intendedScore, 0.5));
 
@@ -390,7 +401,7 @@ class StoryMenuState extends MusicBeatState
 			bullShit++;
 		}
 
-		FlxG.sound.play(Paths.sound('scrollMenu'));
+		FlxG.sound.play(Paths.sound('scrollMenu'), FlxG.save.data.soundVolume);
 
 		updateText();
 	}
