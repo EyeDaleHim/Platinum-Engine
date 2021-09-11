@@ -19,7 +19,8 @@ class OutdatedSubState extends MusicBeatState
 		var ver = "v" + Application.current.meta.get('version');
 		var txt:FlxText = new FlxText(0, 0, FlxG.width,
 			"NOTE: "
-			+ "\nYou are using an unfinished build of the full release. New features are subject to change.",
+			+ "\nYou are using an unfinished build of the full release. New features are subject to change."
+			+ "\nCurrent version is v1.01",
 			32);
 		txt.setFormat("VCR OSD Mono", 32, FlxColor.WHITE, CENTER);
 		txt.screenCenter();

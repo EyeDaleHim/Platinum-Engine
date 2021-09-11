@@ -1,5 +1,5 @@
 haxelib install lime
-haxelib install openfl
+haxelib install openfl 9.0.2
 haxelib install flixel
 
 haxelib run lime setup flixel

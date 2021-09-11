@@ -71,10 +71,17 @@ class Main extends Sprite
 		initialState = TitleState;
 		#end
 
-		addChild(new FlxGame(gameWidth, gameHeight, initialState, zoom, framerate, framerate, skipSplash, startFullscreen));
+		var game:FlxGame = new FlxGame(gameWidth, gameHeight, initialState, zoom, framerate, framerate, skipSplash, startFullscreen);
+		#if debug
+		var build:Dev = new Dev(10, 28, 0xFFFFFF, 'Dev Build');
+		#elseif tester
+		var build:Dev = new Dev(10, 28, 0xFFFFFF, 'Tester Build');
+		#end
+
+		addChild(game);
 
 		#if debug
-		addChild(new Dev(10, 28, 0xFFFFFF));
+		addChild(build);
 		#end
 
 		#if !mobile

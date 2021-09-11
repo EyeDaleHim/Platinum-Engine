@@ -5,6 +5,11 @@ import flixel.math.FlxMath;
 
 class ScoreFunctions
 {
+	public function new()
+	{
+		throw 'Cannot be instantiated';
+	}
+	
 	public static function calculateScore(ratings:String, factor:Float = 0):Int
 	{
 		var practiceMode:Bool = false;

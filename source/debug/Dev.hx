@@ -10,7 +10,7 @@ import openfl.Lib;
 class Dev extends TextField
 {
 
-	public function new(x:Float = 20, y:Float = 10, color:Int = 0x000000)
+	public function new(x:Float = 20, y:Float = 10, color:Int = 0x000000, text:String = '')
 	{
 		super();
 
@@ -21,6 +21,6 @@ class Dev extends TextField
         maxChars = 9999;
 
 		defaultTextFormat = new TextFormat("_sans", 12, color);
-		text = "Dev Build";
+		this.text = text;
 	}
 }

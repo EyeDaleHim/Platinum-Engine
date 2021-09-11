@@ -15,6 +15,7 @@ import flixel.addons.ui.FlxUIInputText;
 import flixel.addons.ui.FlxUINumericStepper;
 import flixel.addons.ui.FlxUITabMenu;
 import flixel.addons.ui.FlxUITooltip.FlxUITooltipStyle;
+import flixel.addons.display.FlxBackdrop;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.group.FlxGroup;
 import flixel.math.FlxMath;
@@ -55,10 +56,12 @@ class ChartingState extends MusicBeatState
 	var curSong:String = 'Dadbattle';
 	var amountSteps:Int = 0;
 	var bullshitUI:FlxGroup;
+	var txtBG:FlxSprite;
 
 	var highlight:FlxSprite;
 
 	var GRID_SIZE:Int = 40;
+	var maxSpriteSize:Int = 0;
 
 	var dummyArrow:FlxSprite;
 
@@ -84,9 +87,14 @@ class ChartingState extends MusicBeatState
 	var leftIcon:HealthIconOld;
 	var rightIcon:HealthIconOld;
 
+	var background:FlxBackdrop = new FlxBackdrop(Paths.image('checker'), 0.2, 0.2, true, true);
+
 	override function create()
 	{
 		curSection = lastSection;
+
+		add(background);
+		background.scrollFactor.set();
 
 		gridBG = FlxGridOverlay.create(GRID_SIZE, GRID_SIZE, GRID_SIZE * 8, GRID_SIZE * 16);
 		add(gridBG);
@@ -143,6 +151,11 @@ class ChartingState extends MusicBeatState
 		loadSong(_song.song);
 		Conductor.changeBPM(_song.bpm);
 		Conductor.mapBPMChanges(_song);
+
+		txtBG = new FlxSprite(990, 40).makeGraphic(250, 360, FlxColor.BLACK);
+		txtBG.scrollFactor.set();
+		txtBG.alpha = 0.6;
+		add(txtBG);
 
 		bpmTxt = new FlxText(1000, 50, 0, "", 16);
 		bpmTxt.scrollFactor.set();
@@ -486,6 +499,9 @@ class ChartingState extends MusicBeatState
 		curStep = recalculateSteps();
 		clickNotes = clickNoteCheck.checked;
 
+		background.x -= 0.45 / (120 / 60);
+		background.y -= 0.16 / (120 / 60);
+
 		curRenderedNotes.forEach(function(spr:FlxSprite) {
 			if (spr.y < strumLine.y && FlxG.sound.music.playing)
 			{
@@ -710,11 +726,19 @@ class ChartingState extends MusicBeatState
 		if (FlxG.keys.justPressed.LEFT || FlxG.keys.justPressed.A)
 			changeSection(curSection - shiftThing);
 
-		bpmTxt.text = bpmTxt.text = Std.string(FlxMath.roundDecimal(Conductor.songPosition / 1000, 2))
+		txtBG.x = bpmTxt.x - 4;
+		txtBG.y = bpmTxt.y - 4;
+		if (Std.int(Math.floor(bpmTxt.width + 4)) > maxSpriteSize)
+			txtBG.setGraphicSize(Std.int(Math.floor(bpmTxt.width + 4)), Std.int(Math.floor(bpmTxt.height + 4)));
+		else
+			maxSpriteSize = Std.int(Math.floor(bpmTxt.width + 4));
+		txtBG.updateHitbox();
+
+		bpmTxt.text = bpmTxt.text = 'SONG INFORMATION: \n'
+			+ Std.string(FlxMath.roundDecimal(Conductor.songPosition / 1000, 2))
 			+ " / "
 			+ Std.string(FlxMath.roundDecimal(FlxG.sound.music.length / 1000, 2))
-			+ "\nSection: "
-			+ curSection;
+			+ '\nSection: $curSection \nBeat: $curBeat \nStep: $curStep';
 		super.update(elapsed);
 	}
 

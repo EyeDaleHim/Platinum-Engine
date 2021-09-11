@@ -1285,41 +1285,18 @@ class PlayState extends MusicBeatState
 	{
 		var truncateAccuracy = 0.00;
 
-		if (accuracyType == 'simple')
-		{
-			// why tf isnt this working
-			accuracy = totalRanksHit / (misses + (playerAccuracy.length)) * 100;
+		accuracy = totalRanksHit / (misses + (playerAccuracy.length)) * 100;
 
-			if (accuracy > 100)
-				accuracy = 100;
+		if (accuracy > 100)
+			accuracy = 100;
 
-			if (accuracy < 0)
-				accuracy = 0;
+		if (accuracy < 0)
+			accuracy = 0;
 
-			truncateAccuracy = truncateFloat(accuracy, 2);
+		truncateAccuracy = truncateFloat(accuracy, 2);
 
-			if (truncateAccuracy < 0)
-				truncateAccuracy = 0;
-		}
-		else if (accuracyType == 'complex')
-		{
-			if (lastNoteDiff < 0)
-				lastNoteDiff = -lastNoteDiff;
-
-			if (curNoteType != 'held')
-				accuracy = totalRanksHit / (misses + (playerAccuracy.length)) + AccuracyHelper.complexCalc(lastNoteDiff, Conductor.safeZoneOffset / 166) * 100;
-
-			if (accuracy > 100)
-				accuracy = 100;
-
-			if (accuracy < 0)
-				accuracy = 0;
-
-			truncateAccuracy = truncateFloat(accuracy, 2);
-
-			if (truncateAccuracy < 0)
-				truncateAccuracy = 0;
-		}
+		if (truncateAccuracy < 0)
+			truncateAccuracy = 0;
 
 		return truncateAccuracy;
 	}
@@ -1717,6 +1694,9 @@ class PlayState extends MusicBeatState
 		perfectMode = false;
 		#end
 
+		if (FlxG.save.data.botplay)
+			SONG.validScore = false;
+
 		FlxG.sound.music.volume = FlxG.save.data.musicVolume / 100;
 		vocals.volume = FlxG.save.data.vocalVolume / 100;
 
@@ -1772,6 +1752,10 @@ class PlayState extends MusicBeatState
 			scoreTxt.text = "Score: " + fixedSongScore + " | " + misses + " Misses" + " | " + "Accuracy: " + updateAccuracy() + "%";
 		else
 			scoreTxt.text = "Score: " + fixedSongScore + " | " + misses + " Misses";
+
+		// shaking
+		camHUD.flashSprite.x = FlxG.camera.flashSprite.x;
+		camHUD.flashSprite.y = FlxG.camera.flashSprite.y;
 
 		if (FlxG.keys.justPressed.ENTER && startedCountdown && canPause)
 		{
@@ -1894,9 +1878,6 @@ class PlayState extends MusicBeatState
 							camFollow.y = dad.getMidpoint().y - 430;
 							camFollow.x = dad.getMidpoint().x - 90;
 					}
-
-					if (dad.curCharacter == 'mom')
-						vocals.volume = FlxG.save.data.vocalVolume / 100;
 
 					if (SONG.song.toLowerCase() == 'tutorial')
 					{
@@ -2209,7 +2190,7 @@ class PlayState extends MusicBeatState
 					{
 						health -= 0.0475;
 						vocals.volume = 0;
-						if (FlxG.save.data.botplay)
+						if (!FlxG.save.data.botplay)
 						{
 							if (!daNote.isSustainNote)
 								noteMiss(daNote.noteData, daNote);
@@ -2244,8 +2225,6 @@ class PlayState extends MusicBeatState
 			#if debug
 			if (FlxG.keys.justPressed.ONE)
 				endSong();
-			if (FlxG.keys.justPressed.L)
-				overlayRoof.visible = !overlayRoof.visible;
 			#end
 		}
 	}
@@ -2256,7 +2235,8 @@ class PlayState extends MusicBeatState
 		FlxG.sound.music.volume = 0;
 		vocals.volume = 0;
 
-		Highscore.saveScore(SONG.song, songScore, storyDifficulty);
+		if (SONG.validScore)
+			Highscore.saveScore(SONG.song, songScore, storyDifficulty);
 
 		if (isStoryMode || debugCutscene)
 		{
@@ -2280,7 +2260,8 @@ class PlayState extends MusicBeatState
 				// if ()
 				StoryMenuState.weekUnlocked[Std.int(Math.min(storyWeek + 1, StoryMenuState.weekUnlocked.length - 1))] = true;
 
-				Highscore.saveWeekScore(storyWeek, campaignScore, storyDifficulty);
+				if (SONG.validScore)
+					Highscore.saveWeekScore(storyWeek, campaignScore, storyDifficulty);
 
 				FlxG.save.data.weekUnlocked = StoryMenuState.weekUnlocked;
 				FlxG.save.flush();
@@ -2395,14 +2376,27 @@ class PlayState extends MusicBeatState
 		if (!isSustainNote)
 			score = ScoreFunctions.calculateScore(daRating, noteDiff);
 
-		if (daRating == 'sick')
-			totalRanksHit += 1;
-		else if (daRating == 'good')
-			totalRanksHit += 0.75;
-		else if (daRating == 'bad')
-			totalRanksHit += 0.50;
-		else if (daRating == 'shit')
-			totalRanksHit += 0.25;
+		var awesomeNoteDiff:Float = 0;
+		if (noteDiff < 0)
+			awesomeNoteDiff = -noteDiff;
+		else
+			awesomeNoteDiff = noteDiff;
+
+		if (accuracyType == 'complex')
+		{
+			totalRanksHit += AccuracyHelper.wif3(awesomeNoteDiff, Conductor.safeZoneOffset / 166);
+		}
+		else
+		{
+			if (daRating == 'sick')
+				totalRanksHit += 1;
+			else if (daRating == 'good')
+				totalRanksHit += 0.75;
+			else if (daRating == 'bad')
+				totalRanksHit += 0.50;
+			else if (daRating == 'shit')
+				totalRanksHit += 0.25;
+		}
 
 		totalNotesHit += 1;
 
@@ -2670,6 +2664,22 @@ class PlayState extends MusicBeatState
 				if (FlxG.save.data.botplay && daNote.canBeHit && daNote.mustPress || FlxG.save.data.botplay && daNote.tooLate && daNote.mustPress)
 				{
 					goodNoteHit(daNote);
+
+					playerStrums.forEach(function(spr:FlxSprite)
+					{
+						if (Math.abs(daNote.noteData) == spr.ID)
+						{
+							spr.animation.play('confirm', true);
+						}
+						if (spr.animation.curAnim.name == 'confirm' && !curStage.startsWith('school'))
+						{
+							spr.centerOffsets();
+							spr.offset.x -= 13;
+							spr.offset.y -= 13;
+						}
+						else
+							spr.centerOffsets();
+					});
 					boyfriend.holdTimer = daNote.sustainLength;
 				}
 			}
@@ -2680,18 +2690,15 @@ class PlayState extends MusicBeatState
 				boyfriend.playAnim('idle');
 		}
 
-		playerStrums.forEach(function(spr:Dynamic)
+		if (!FlxG.save.data.botplay)
 		{
-			if (!FlxG.save.data.botplay)
+			playerStrums.forEach(function(spr:FlxSprite)
 			{
 				if (pressArray[spr.ID] && spr.animation.curAnim.name != 'confirm')
 					spr.animation.play('pressed');
 				if (!holdArray[spr.ID])
 					spr.animation.play('static');
-			}
 
-			if (spr.animation.curAnim != null)
-			{
 				if (spr.animation.curAnim.name == 'confirm' && !curStage.startsWith('school'))
 				{
 					spr.centerOffsets();
@@ -2700,8 +2707,8 @@ class PlayState extends MusicBeatState
 				}
 				else
 					spr.centerOffsets();
-			}
-		});
+			});
+		}
 	}
 
 	function noteMiss(direction:Int = 1, daNote:Note):Void

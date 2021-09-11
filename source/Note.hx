@@ -158,8 +158,6 @@ class Note extends FlxSprite
 						prevNote.animation.play('redhold');
 				}
 
-				// do it twice to absolutely flip them??
-				flipY = FlxG.save.data.downscroll;
 				flipY = FlxG.save.data.downscroll;
 
 				if (FlxG.save.data.downscroll)
@@ -193,6 +191,10 @@ class Note extends FlxSprite
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
+
+		// lol wtf
+		if (animation.curAnim.name.endsWith('end'))
+			flipY = FlxG.save.data.downscroll;
 
 		if (mustPress)
 		{

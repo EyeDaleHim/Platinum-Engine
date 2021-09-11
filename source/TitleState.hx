@@ -66,6 +66,10 @@ class TitleState extends MusicBeatState
 
 		FlxG.camera.follow(followCam, 1);
 
+		#if tester
+		trace('man is a tester');
+		#end
+
 		// DEBUG BULLSHIT
 
 		super.create();
@@ -123,7 +127,7 @@ class TitleState extends MusicBeatState
 			diamond.persist = true;
 			diamond.destroyOnNoUse = false;
 
-			FlxTransitionableState.defaultTransIn = new TransitionData(FADE, FlxColor.BLACK, 1, new FlxPoint(0, -1), {asset: diamond, width: 32, height: 32},
+			FlxTransitionableState.defaultTransIn = new TransitionData(FADE, FlxColor.BLACK, 0.7, new FlxPoint(0, -1), {asset: diamond, width: 32, height: 32},
 				new FlxRect(-200, -200, FlxG.width * 1.4, FlxG.height * 1.4));
 			FlxTransitionableState.defaultTransOut = new TransitionData(FADE, FlxColor.BLACK, 0.7, new FlxPoint(0, 1),
 				{asset: diamond, width: 32, height: 32}, new FlxRect(-200, -200, FlxG.width * 1.4, FlxG.height * 1.4));
@@ -318,10 +322,17 @@ class TitleState extends MusicBeatState
 			transitioning = true;
 			// FlxG.sound.music.stop();
 
+			#if !tester
 			new FlxTimer().start(0.8, function(tmr:FlxTimer)
 			{
 				FlxG.switchState(new MainMenuState());
 			});
+			#else
+			new FlxTimer().start(0.8, function(tmr:FlxTimer)
+			{
+				FlxG.switchState(new OutdatedSubState());
+			});
+			#end
 		}
 
 		if (pressedEnter && !skippedIntro)
