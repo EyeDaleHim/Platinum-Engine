@@ -1,2 +1,0 @@
-cd ..
-lime test windows
