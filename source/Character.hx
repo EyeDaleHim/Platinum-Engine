@@ -196,7 +196,7 @@ class Character extends FlxSprite
 				tex = Paths.getSparrowAtlas('momCar');
 				frames = tex;
 
-				animation.addByPrefix('idle', "Mom Idle", 24, false);
+				animation.addByIndices('idle', "Mom Idle", countFrames(0, 12), "", 24, false);
 				animation.addByPrefix('singUP', "Mom Up Pose", 24, false);
 				animation.addByPrefix('singDOWN', "MOM DOWN POSE", 24, false);
 				animation.addByPrefix('singLEFT', 'Mom Left Pose', 24, false);
@@ -357,7 +357,7 @@ class Character extends FlxSprite
 			case 'bf-car':
 				var tex = Paths.getSparrowAtlas('bfCar');
 				frames = tex;
-				animation.addByPrefix('idle', 'BF idle dance', 24, false);
+				animation.addByIndices('idle', 'BF idle dance', countFrames(0, 12), "", 24, false);
 				animation.addByPrefix('singUP', 'BF NOTE UP0', 24, false);
 				animation.addByPrefix('singLEFT', 'BF NOTE LEFT0', 24, false);
 				animation.addByPrefix('singRIGHT', 'BF NOTE RIGHT0', 24, false);
@@ -674,7 +674,7 @@ class Character extends FlxSprite
 			offset.set(daOffset[0], daOffset[1]);
 		}
 		else
-			offset.set(0, 0);
+			centerOffsets();
 
 		if (curCharacter == 'gf')
 		{
