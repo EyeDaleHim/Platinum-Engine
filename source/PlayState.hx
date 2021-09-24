@@ -1783,8 +1783,6 @@ class PlayState extends MusicBeatState
 
 		fixedSongScore = FlxStringUtil.formatMoney(songScore, false, true);
 
-<<<<<<< Updated upstream
-=======
 		// fix the hair stop bug
 		if (curStage == 'limo')
 		{
@@ -1795,7 +1793,6 @@ class PlayState extends MusicBeatState
 				boyfriend.playAnim('idle', true);
 		}
 
->>>>>>> Stashed changes
 		if (FlxG.save.data.botplay)
 			botplayTxt.alpha = 0.25;
 
@@ -1970,11 +1967,6 @@ class PlayState extends MusicBeatState
 							camFollow.x = enemy.getMidpoint().x - 90;
 					}
 
-<<<<<<< Updated upstream
-=======
-					// trace(enemy.animation.curAnim.name.toLowerCase());
-
->>>>>>> Stashed changes
 					if (SONG.song.toLowerCase() == 'tutorial')
 					{
 						tweenCamIn();
@@ -2258,47 +2250,10 @@ class PlayState extends MusicBeatState
 				{
 					if (daNote.mustPress)
 						daNote.y = (playerStrums.members[Math.floor(Math.abs(daNote.noteData))].y
-<<<<<<< Updated upstream
 							+ 0.45 * (Conductor.songPosition - daNote.strumTime) * FlxMath.roundDecimal(SONG.speed, 2));
-=======
-							+ 0.45 * (Conductor.songPosition - daNote.strumTime) * FlxMath.roundDecimal(SONG.speed, 2))
-							- daNote.noteYOff;
-						/* ill figure out why this shit doesnt work
-							if (daNote.y > -40)
-							{
-								FlxTween.tween(daNote, {alpha: 1}, Conductor.stepCrochet / 2000, {
-									onComplete: function(twn:FlxTween)
-									{
-										daNote.isOnDaScreen = true;
-									}
-								});
-								daNote.prevNote.alpha = daNote.alpha;
-							}
-							else
-								daNote.alpha = 0.3; */
-					}
->>>>>>> Stashed changes
 					else
 						daNote.y = (enemyStrums.members[Math.floor(Math.abs(daNote.noteData))].y
-<<<<<<< Updated upstream
 							+ 0.45 * (Conductor.songPosition - daNote.strumTime) * FlxMath.roundDecimal(SONG.speed, 2));
-=======
-							+ 0.45 * (Conductor.songPosition - daNote.strumTime) * FlxMath.roundDecimal(SONG.speed, 2))
-							- daNote.noteYOff;
-						/*if (daNote.y > -40)
-							{
-								FlxTween.tween(daNote, {alpha: 1}, Conductor.stepCrochet / 2000, {
-									onComplete: function(twn:FlxTween)
-									{
-										daNote.isOnDaScreen = true;
-									}
-								});
-								daNote.prevNote.alpha = daNote.alpha;
-							}
-							else
-								daNote.alpha = 0.3; */
-					}
->>>>>>> Stashed changes
 					if (daNote.isSustainNote)
 					{
 						// Remember = minus makes notes go up, plus makes them go down
@@ -3304,12 +3259,6 @@ class PlayState extends MusicBeatState
 			// Conductor.changeBPM(SONG.bpm);
 
 			// Dad doesnt interupt his own notes
-<<<<<<< Updated upstream
-			if (SONG.notes[Math.floor(curStep / 16)].mustHitSection
-				|| !dad.animation.curAnim.name.startsWith("sing")
-				&& dad.curCharacter != 'gf')
-				dad.dance();
-=======
 			if (curStage != 'limo')
 			{
 				if (SONG.notes[Math.floor(curStep / 16)].mustHitSection
@@ -3317,7 +3266,6 @@ class PlayState extends MusicBeatState
 					&& enemy.curCharacter != 'gf')
 					enemy.dance();
 			}
->>>>>>> Stashed changes
 		}
 		// FlxG.log.add('change bpm' + SONG.notes[Std.int(curStep / 16)].changeBPM);
 		wiggleShit.update(Conductor.crochet);
