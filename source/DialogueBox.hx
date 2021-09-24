@@ -135,7 +135,6 @@ class DialogueBox extends FlxSpriteGroup
 		add(handSelect);
 		
 
-
 		if (!talkingRight)
 		{
 			// box.flipX = true;

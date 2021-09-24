@@ -24,7 +24,7 @@ using StringTools;
 
 class SettingsSounds extends MusicBeatState
 {
-    var curOptions:Array<String> =  ['sounds settings', 'music volume', 'sound volume', 'vocal volume'];
+    var curOptions:Array<String> = ['sounds settings', 'music volume', 'sound volume', 'vocal volume'];
     // note to self: null values should not be changed
     var changeableValues:Array<Dynamic> = [null, FlxG.save.data.musicVolume, FlxG.save.data.soundVolume,
     FlxG.save.data.vocalVolume, null];

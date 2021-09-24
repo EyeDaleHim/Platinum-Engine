@@ -120,18 +120,22 @@ class ChartingState extends MusicBeatState
 		curRenderedSustains = new FlxTypedGroup<FlxSprite>();
 
 		if (PlayState.SONG != null)
+		{
 			_song = PlayState.SONG;
+		}
 		else
 		{
 			_song = {
 				song: 'Test',
 				notes: [],
+				// cameraBeat: [],
 				bpm: 150,
 				needsVoices: true,
 				player1: 'bf',
 				player2: 'dad',
 				gf: 'gf',
 				speed: 1,
+				camera: false,
 				validScore: false
 			};
 		}
@@ -216,6 +220,13 @@ class ChartingState extends MusicBeatState
 			FlxG.sound.music.volume = vol;
 		};
 
+		var cameraButton:FlxUICheckBox = new FlxUICheckBox(10, 180, null, null, "Dynamic Camera", 100);
+		cameraButton.checked = _song.camera;
+		cameraButton.callback = function()
+		{
+			_song.camera = cameraButton.checked;
+		};
+
 		var saveButton:FlxButton = new FlxButton(110, 8, "Save", function()
 		{
 			saveLevel();
@@ -268,6 +279,7 @@ class ChartingState extends MusicBeatState
 		tab_group_song.add(loadAutosaveBtn);
 		tab_group_song.add(stepperBPM);
 		tab_group_song.add(stepperSpeed);
+		tab_group_song.add(cameraButton);
 		tab_group_song.add(player1DropDown);
 		tab_group_song.add(player2DropDown);
 
@@ -502,19 +514,20 @@ class ChartingState extends MusicBeatState
 		background.x -= 0.45 / (120 / 60);
 		background.y -= 0.16 / (120 / 60);
 
-		curRenderedNotes.forEach(function(spr:FlxSprite) {
+		curRenderedNotes.forEach(function(spr:FlxSprite)
+		{
 			if (spr.y < strumLine.y && FlxG.sound.music.playing)
 			{
 				var hasBeenClicked:Bool = false;
-				
+
 				spr.alpha = 0.6;
 				/* someone do this for me, it justs repeats the sound
-				if (clickNotes && FlxG.sound.music.playing && !hasBeenClicked)
-				{
-					FlxG.sound.play('assets/sounds/noteHitSound' + TitleState.soundExt, 0.6);
-					hasBeenClicked = true;
-				}
-				*/
+					if (clickNotes && FlxG.sound.music.playing && !hasBeenClicked)
+					{
+						FlxG.sound.play('assets/sounds/noteHitSound' + TitleState.soundExt, 0.6);
+						hasBeenClicked = true;
+					}
+				 */
 			}
 			else
 				spr.alpha = 1;
@@ -591,7 +604,7 @@ class ChartingState extends MusicBeatState
 		{
 			dummyArrow.x = Math.floor(FlxG.mouse.x / GRID_SIZE) * GRID_SIZE;
 			if (FlxG.keys.pressed.SHIFT)
-			{				
+			{
 				if (FlxG.keys.pressed.CONTROL)
 					dummyArrow.y = Math.floor(FlxG.mouse.y / (GRID_SIZE / 4)) * (GRID_SIZE / 4);
 				else

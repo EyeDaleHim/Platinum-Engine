@@ -16,6 +16,8 @@ class Note extends FlxSprite
 {
 	public var strumTime:Float = 0;
 
+	public var formerHeight:Float = 0;
+
 	public var mustPress:Bool = false;
 	public var noteData:Int = 0;
 	public var canBeHit:Bool = false;
@@ -23,7 +25,10 @@ class Note extends FlxSprite
 	public var wasGoodHit:Bool = false;
 	public var prevNote:Note;
 
+	public var isOnDaScreen:Bool = false;
+
 	public var sustainLength:Float = 0;
+	public var noteYOff:Int = 0;
 	public var isSustainNote:Bool = false;
 
 	public var noteScore:Float = 1;
@@ -158,34 +163,53 @@ class Note extends FlxSprite
 						prevNote.animation.play('redhold');
 				}
 
+				var stepHeight = (((0.45 * Conductor.stepCrochet)) * FlxMath.roundDecimal(PlayState.SONG.speed, 2));
+
+				formerHeight = prevNote.scale.y;
+				
 				flipY = FlxG.save.data.downscroll;
 
-				if (FlxG.save.data.downscroll)
-				{
-					prevNote.scale.y *= (((Conductor.stepCrochet / 100) + 0.3) * 1.5 * PlayState.SONG.speed);
-				}
-				else
-				{
-					// ALL IT TOOK WAS 0.91 WTCDFFFFFF
-					prevNote.scale.y *= (((Conductor.stepCrochet / 100) + 0.91) * 1.5 * PlayState.SONG.speed);
-				}
+				// i had to copy from kade engine cuz im tired
 				prevNote.updateHitbox();
+				
+				prevNote.scale.y *= (stepHeight + 1.2) / prevNote.height;
+				
+				prevNote.updateHitbox();
+				if (FlxG.save.data.downscroll)
+					prevNote.noteYOff = Math.round(-prevNote.offset.y - 12);
+				else
+					prevNote.noteYOff = Math.round(-prevNote.offset.y + 12);
+
 				// prevNote.setGraphicSize();
+
+				noteYOff = Math.round(-offset.y);
+				
+				/*// WHY GODDAMN IT!!!!
+				if (FlxG.save.data.downscroll)
+					prevNote.y -= prevNote.height * (1.5 * PlayState.SONG.speed * 1.5) + (Conductor.stepCrochet / 250) + 15;
+				else
+					prevNote.y += prevNote.height * (1.5 * PlayState.SONG.speed * 1.5) + (Conductor.stepCrochet / 250) + 15;
+				// prevNote.setGraphicSize();*/
 			}
 		}
 	}
 
 	public function updateSustainScale():Void
 	{
+		var stepHeight = (((0.45 * Conductor.stepCrochet)) * FlxMath.roundDecimal(PlayState.SONG.speed, 2));
+
+		prevNote.scale.y = formerHeight;
+		
+		prevNote.scale.y *= (stepHeight + 1.2) / prevNote.height;
+		prevNote.updateHitbox();
 		if (FlxG.save.data.downscroll)
-			{
-				prevNote.scale.y *= (((Conductor.stepCrochet / 100) + 0.3) * 1.5 * PlayState.SONG.speed);
-			}
-			else
-			{
-				// ALL IT TOOK WAS 0.91 WTCDFFFFFF
-				prevNote.scale.y *= (((Conductor.stepCrochet / 100) + 0.91) * 1.5 * PlayState.SONG.speed);
-			}
+			prevNote.noteYOff = Math.round(-prevNote.offset.y - 12);
+		else
+			prevNote.noteYOff = Math.round(-prevNote.offset.y + 12);
+
+		// prevNote.setGraphicSize();
+
+		noteYOff = Math.round(-offset.y);
 	}
 
 	override function update(elapsed:Float)
@@ -195,6 +219,8 @@ class Note extends FlxSprite
 		// lol wtf
 		if (animation.curAnim.name.endsWith('end'))
 			flipY = FlxG.save.data.downscroll;
+
+		prevNote.alpha = this.alpha;
 
 		if (mustPress)
 		{

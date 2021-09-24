@@ -1,5 +1,6 @@
 package;
 
+import flixel.input.keyboard.FlxKey;
 import Controls;
 import flixel.FlxCamera;
 import flixel.FlxG;
@@ -115,6 +116,27 @@ class PlayerSettings
 		}
 
 	 */
+	static public function setBindingsFromSave():Void
+	{	
+		// LEFT, DOWN, UP, RIGHT
+		var savedKeys:Array<FlxKey> = [];
+		var defaultKeys:Array<FlxKey> = [FlxKey.A, FlxKey.S, FlxKey.W, FlxKey.D];
+		var keyOrder:Array<Control> = [LEFT, DOWN, UP, RIGHT];
+		// savedKeys = [FlxG.save.data.leftBind, FlxG.save.data.downBind, FlxG.save.data.upBind, FlxG.save.data.rightBind];
+		savedKeys = [FlxKey.D, FlxKey.F, FlxKey.J, FlxKey.K];
+		
+		for (i in 0...savedKeys.length)
+		{
+			/* i forgot that you cant set nulls on this thing
+			if (savedKeys[i] == null)
+			{
+				// use default instead
+				savedKeys[i] = defaultKeys[i];
+			}*/
+			player1.controls.replaceBinding(keyOrder[i], Keys, savedKeys[i], defaultKeys[i]);
+		}
+	}
+	 
 	static public function init():Void
 	{
 		if (player1 == null)
@@ -122,6 +144,8 @@ class PlayerSettings
 			player1 = new PlayerSettings(0, Solo);
 			++numPlayers;
 		}
+		
+		Settings.init();
 
 		var numGamepads = FlxG.gamepads.numActiveGamepads;
 		if (numGamepads > 0)

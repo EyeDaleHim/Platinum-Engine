@@ -113,10 +113,10 @@ class AnimationDebug extends FlxState
 	{
 		textAnim.text = char.animation.curAnim.name;
 
-		if (FlxG.keys.justPressed.E)
-			FlxG.camera.zoom += 0.25;
-		if (FlxG.keys.justPressed.Q)
-			FlxG.camera.zoom -= 0.25;
+		if (FlxG.keys.pressed.E)
+			FlxG.camera.zoom += 0.005;
+		if (FlxG.keys.pressed.Q)
+			FlxG.camera.zoom -= 0.005;
 
 		if (FlxG.keys.pressed.I || FlxG.keys.pressed.J || FlxG.keys.pressed.K || FlxG.keys.pressed.L)
 		{

@@ -15,7 +15,7 @@ using StringTools;
 class Alphabet extends FlxSpriteGroup
 {
 	public var fade:Bool = false;
-	
+
 	public var delay:Float = 0.05;
 	public var paused:Bool = false;
 
@@ -185,6 +185,15 @@ class Alphabet extends FlxSpriteGroup
 				if (isBold)
 				{
 					letter.createBold(splitWords[loopNum]);
+
+					/*
+					if (isNumber)
+						letter.createBoldNumber(splitWords[loopNum]);
+					else if (isSymbol)
+						letter.createBoldSymbol(splitWords[loopNum]);
+					else
+						letter.createBold(splitWords[loopNum]);
+					*/
 				}
 				else
 				{
@@ -229,7 +238,7 @@ class Alphabet extends FlxSpriteGroup
 			coolThing = 80;
 		else
 			coolThing = 0;
-		
+
 		if (isMenuItem)
 		{
 			if (!fade)
@@ -237,7 +246,7 @@ class Alphabet extends FlxSpriteGroup
 				var scaledY = FlxMath.remapToRange(targetY, 0, 1, 0, 1.3);
 
 				y = FlxMath.lerp(y, (scaledY * 120) + (FlxG.height * 0.48), 0.16);
-				x = FlxMath.lerp(x, (targetY * 20) + 90 + coolThing, 0.16);
+				x = FlxMath.lerp(x, (targetY * 20) + 90 + coolThing /*(FlxG.width * 0.5) - (length * 20) - 95*/, 0.16);
 			}
 			else
 			{

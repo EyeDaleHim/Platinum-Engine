@@ -33,6 +33,9 @@ class Main extends Sprite
 	{
 		super();
 
+		if (framerate > 999)
+			framerate = 999;
+
 		if (stage != null)
 		{
 			init();

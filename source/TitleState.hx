@@ -59,7 +59,7 @@ class TitleState extends MusicBeatState
 	override public function create():Void
 	{
 		PlayerSettings.init();
-		Settings.init();
+		PlayerSettings.setBindingsFromSave();
 
 		followCam = new FlxObject(FlxG.width * 0.5, FlxG.height * 0.5);
 		curWacky = FlxG.random.getObject(getIntroTextShit());
@@ -122,13 +122,13 @@ class TitleState extends MusicBeatState
 	function startIntro()
 	{
 		if (!initialized)
-		{
+		{			
 			var diamond:FlxGraphic = FlxGraphic.fromClass(GraphicTransTileDiamond);
 			diamond.persist = true;
 			diamond.destroyOnNoUse = false;
 
-			FlxTransitionableState.defaultTransIn = new TransitionData(FADE, FlxColor.BLACK, 0.7, new FlxPoint(0, -1), {asset: diamond, width: 32, height: 32},
-				new FlxRect(-200, -200, FlxG.width * 1.4, FlxG.height * 1.4));
+			FlxTransitionableState.defaultTransIn = new TransitionData(FADE, FlxColor.BLACK, 0.7, new FlxPoint(0, -1),
+				{asset: diamond, width: 32, height: 32}, new FlxRect(-200, -200, FlxG.width * 1.4, FlxG.height * 1.4));
 			FlxTransitionableState.defaultTransOut = new TransitionData(FADE, FlxColor.BLACK, 0.7, new FlxPoint(0, 1),
 				{asset: diamond, width: 32, height: 32}, new FlxRect(-200, -200, FlxG.width * 1.4, FlxG.height * 1.4));
 
@@ -160,6 +160,7 @@ class TitleState extends MusicBeatState
 		logoBl.animation.addByPrefix('bump', 'logo bumpin', 24);
 		logoBl.animation.play('bump');
 		logoBl.updateHitbox();
+		// logoBl.y += FlxG.height + 200;
 		// logoBl.screenCenter();
 		// logoBl.color = FlxColor.BLACK;
 
@@ -245,6 +246,9 @@ class TitleState extends MusicBeatState
 			swagGoodArray.push(i.split('--'));
 		}
 
+		if (Date.now().toString().startsWith('2021-09-22'))
+			swagGoodArray = [['happy', 'madness day']];
+
 		return swagGoodArray;
 	}
 
@@ -260,7 +264,7 @@ class TitleState extends MusicBeatState
 
 		if (FlxG.keys.justPressed.F11)
 		{
-			FlxG.fullscreen = !FlxG.fullscreen;
+			FlxG.fullscreen = false;
 		}
 
 		var pressedEnter:Bool = FlxG.keys.justPressed.ENTER;
@@ -403,6 +407,8 @@ class TitleState extends MusicBeatState
 		}
 	}
 
+	var skippedIntro:Bool = false;
+
 	override function beatHit()
 	{
 		super.beatHit();
@@ -419,65 +425,68 @@ class TitleState extends MusicBeatState
 
 		FlxG.log.add(curBeat);
 
-		switch (curBeat)
+		if (!skippedIntro)
 		{
-			case 2:
-				createCoolText(['ninjamuffin99', 'phantomArcade', 'kawaisprite', 'evilsk8er']);
-			// credTextShit.visible = true;
-			case 3:
-				addMoreText('present');
-			// credTextShit.text += '\npresent...';
-			// credTextShit.addText();
-			case 4:
-				deleteCoolText();
-			// credTextShit.visible = false;
-			// credTextShit.text = 'In association \nwith';
-			// credTextShit.screenCenter();
-			case 5:
-				createCoolText(['In association', 'with']);
-			case 7:
-				addMoreText('newgrounds');
-				ngSpr.visible = true;
-			// credTextShit.text += '\nNewgrounds';
-			case 8:
-				deleteCoolText();
-				ngSpr.visible = false;
-			// credTextShit.visible = false;
+			switch (curBeat)
+			{
+				case 2:
+					createCoolText(['ninjamuffin99', 'phantomArcade', 'kawaisprite', 'evilsk8er']);
+				// credTextShit.visible = true;
+				case 3:
+					addMoreText('present');
+				// credTextShit.text += '\npresent...';
+				// credTextShit.addText();
+				case 4:
+					deleteCoolText();
+				// credTextShit.visible = false;
+				// credTextShit.text = 'In association \nwith';
+				// credTextShit.screenCenter();
+				case 5:
+					createCoolText(['In association', 'with']);
+				case 7:
+					addMoreText('newgrounds');
+					ngSpr.visible = true;
+				// credTextShit.text += '\nNewgrounds';
+				case 8:
+					deleteCoolText();
+					ngSpr.visible = false;
+				// credTextShit.visible = false;
 
-			// credTextShit.text = 'Shoutouts Tom Fulp';
-			// credTextShit.screenCenter();
-			case 9:
-				createCoolText([curWacky[0]]);
-			// credTextShit.visible = true;
-			case 11:
-				addMoreText(curWacky[1]);
-			// credTextShit.text += '\nlmao';
-			case 12:
-				deleteCoolText();
-			// credTextShit.visible = false;
-			// credTextShit.text = "Friday";
-			// credTextShit.screenCenter();
-			case 13:
-				addMoreText('Friday');
-			// credTextShit.visible = true;
-			case 14:
-				addMoreText('Night');
-			// credTextShit.text += '\nNight';
-			case 15:
-				addMoreText('Funkin'); // credTextShit.text += '\nFunkin';
-			case 16:
-				credGroup.forEach(function(spr:Dynamic)
-				{
-					spr.acceleration.y = 550;
-					spr.velocity.y -= FlxG.random.int(140, 175);
-					spr.velocity.x -= FlxG.random.int(0, 10);
-				});
-				skipIntro();
-				blackScreen.destroy();
+				// credTextShit.text = 'Shoutouts Tom Fulp';
+				// credTextShit.screenCenter();
+				case 9:
+					createCoolText([curWacky[0]]);
+				// credTextShit.visible = true;
+				case 11:
+					addMoreText(curWacky[1]);
+				// credTextShit.text += '\nlmao';
+				case 12:
+					deleteCoolText();
+				// credTextShit.visible = false;
+				// credTextShit.text = "Friday";
+				// credTextShit.screenCenter();
+				case 13:
+					addMoreText('Friday');
+				// credTextShit.visible = true;
+				case 14:
+					addMoreText('Night');
+				// credTextShit.text += '\nNight';
+				case 15:
+					addMoreText('Funkin'); // credTextShit.text += '\nFunkin';
+				case 16:
+					credGroup.forEach(function(spr:Dynamic)
+					{
+						spr.acceleration.y = 550;
+						spr.velocity.y -= FlxG.random.int(140, 175);
+						spr.velocity.x -= FlxG.random.int(0, 10);
+					});
+					skipIntro();
+					blackScreen.destroy();
+				case 18:
+					FlxTween.tween(logoBl, {y: -100}, Conductor.crochet / 500, {ease: FlxEase.quintOut});
+			}
 		}
 	}
-
-	var skippedIntro:Bool = false;
 
 	function skipIntro():Void
 	{

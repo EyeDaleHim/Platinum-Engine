@@ -2,6 +2,14 @@ package;
 
 import flixel.FlxG;
 
+/*
+enum Quality
+{
+    LOW;
+    MEDIUM;
+    HIGH;
+}*/
+
 class Settings
 {
     public static var downscroll:Bool;

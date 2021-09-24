@@ -9,10 +9,14 @@ class HealthIconOld extends FlxSprite
 	 * Used for FreeplayState! If you use it elsewhere, prob gonna annoying
 	 */
 	public var sprTracker:FlxSprite;
+	public var char:String;
 
 	public function new(char:String = 'bf', isPlayer:Bool = false)
 	{
 		super();
+
+		this.char = char;
+		
 		loadGraphic(Paths.image('iconGrid'), true, 150, 150);
 
 		antialiasing = FlxG.save.data.antialiasing;
@@ -36,6 +40,7 @@ class HealthIconOld extends FlxSprite
 		animation.add('monster', [19, 20], 0, false, isPlayer);
 		animation.add('monster-christmas', [19, 20], 0, false, isPlayer);
 		animation.add('scared-bf', [24, 24], 0, false, isPlayer);
+		animation.add('gf-cheer', [26], 0, false, isPlayer);
 		animation.play(char);
 		scrollFactor.set();
 	}
