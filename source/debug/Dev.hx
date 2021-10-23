@@ -14,6 +14,12 @@ class Dev extends TextField
 	{
 		super();
 
+		this.text = text;
+		if (!GameData.debugStats)
+		{
+			this.text = '';
+		}
+
 		this.x = x;
 		this.y = y;
 
@@ -21,6 +27,5 @@ class Dev extends TextField
         maxChars = 9999;
 
 		defaultTextFormat = new TextFormat("_sans", 12, color);
-		this.text = text;
 	}
 }

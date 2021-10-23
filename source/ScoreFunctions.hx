@@ -10,7 +10,7 @@ class ScoreFunctions
 		throw 'Cannot be instantiated';
 	}
 	
-	public static function calculateScore(ratings:String, factor:Float = 0):Int
+	public static function calculateNote(ratings:String, factor:Float = 0):Int
 	{
 		var practiceMode:Bool = false;
 

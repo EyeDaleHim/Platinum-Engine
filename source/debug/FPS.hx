@@ -1,5 +1,8 @@
 package debug;
 
+#if !sys
+import flixel.FlxG;
+#end
 import haxe.Timer;
 import openfl.events.Event;
 import openfl.text.TextField;
@@ -54,9 +57,15 @@ class FPS extends TextField
 	}
 
 	// Event Handlers
+	#if !sys
+	var CPUTime:Float = 0;
+	#end
 	@:noCompletion
 	private #if !flash override #end function __enterFrame(deltaTime:Float):Void
 	{
+		if (GameData.debugStats)
+			return;
+		
 		currentTime += deltaTime;
 		times.push(currentTime);
 
@@ -67,7 +76,11 @@ class FPS extends TextField
 
 		var currentCount = times.length;
 		currentFPS = Math.round((currentCount + cacheCount) / 2);
-        var CPUTime = Sys.cpuTime();
+        #if sys
+		var CPUTime = Sys.cpuTime();
+		#else
+		CPUTime += FlxG.elapsed;
+		#end
 
         CPUTime = CPUTime * Math.pow(10, 2);
         CPUTime = Math.round( CPUTime ) / Math.pow(10, 2);
@@ -76,7 +89,8 @@ class FPS extends TextField
 		{
 			text = "FPS: " + currentFPS;
             #if debug
-            text += " ("+Math.round(currentCount / 2)+", " +Math.round(cacheCount / 2)+")" + '\n' + CPUTime + ' elapsed';
+            if (GameData.debugStats)
+				text += " ("+Math.round(currentCount / 2)+", " +Math.round(cacheCount / 2)+")" + '\n' + CPUTime + ' elapsed';
             #end
 
 			#if (gl_stats && !disable_cffi && (!html5 || !canvas))

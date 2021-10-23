@@ -2,6 +2,8 @@ package;
 
 import flixel.FlxG;
 import flixel.FlxSprite;
+import flixel.tweens.FlxTween;
+import flixel.tweens.FlxEase;
 import flixel.animation.FlxBaseAnimation;
 import flixel.graphics.frames.FlxAtlasFrames;
 
@@ -16,14 +18,15 @@ class Character extends FlxSprite
 	public var curCharacter:String = 'bf';
 
 	public var holdTimer:Float = 0;
-	/*
-	* the countFrames() function is fairly easy to use, so for example, you want to use an indice frames that starts
-	* from 15 to 28, then you must do "countFrames(15, 28)";
-	* It is fairly easier than [15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28].
-	* There are some cases that has [30, 15, 16, 17, 18];
-	* You can do "countFrames(15, 18, 30);"
-	**/
+	public var lockedY:Float = 0;
 
+	/*
+	 * the countFrames() function is fairly easy to use, so for example, you want to use an indice frames that starts
+	 * from 15 to 28, then you must do "countFrames(15, 28)";
+	 * It is fairly easier than [15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28].
+	 * There are some cases that has [30, 15, 16, 17, 18];
+	 * You can do "countFrames(15, 18, 30);"
+	**/
 	public function new(x:Float, y:Float, ?character:String = "bf", ?isPlayer:Bool = false)
 	{
 		super(x, y);
@@ -31,6 +34,7 @@ class Character extends FlxSprite
 		animOffsets = new Map<String, Array<Dynamic>>();
 		curCharacter = character;
 		this.isPlayer = isPlayer;
+		this.lockedY = y;
 
 		var tex:FlxAtlasFrames;
 		antialiasing = FlxG.save.data.antialiasing;
@@ -107,8 +111,7 @@ class Character extends FlxSprite
 				frames = tex;
 				animation.addByIndices('singUP', 'GF Dancing Beat Hair blowing CAR', [0], "", 24, false);
 				animation.addByIndices('danceLeft', 'GF Dancing Beat Hair blowing CAR', countFrames(0, 14, 30), "", 24, false);
-				animation.addByIndices('danceRight', 'GF Dancing Beat Hair blowing CAR', countFrames(15, 29), "", 24,
-					false);
+				animation.addByIndices('danceRight', 'GF Dancing Beat Hair blowing CAR', countFrames(15, 29), "", 24, false);
 
 				addOffset('danceLeft', 0);
 				addOffset('danceRight', 0);
@@ -521,6 +524,12 @@ class Character extends FlxSprite
 				antialiasing = FlxG.save.data.antialiasing;
 		}
 
+		if (GameData.charactersThatFloat.contains(character))
+		{
+			y -= 120;
+			FlxTween.tween(this, {y: y + 120}, 2, {ease: FlxEase.quadOut, type: PINGPONG});
+		}
+
 		dance();
 
 		if (isPlayer)
@@ -548,11 +557,31 @@ class Character extends FlxSprite
 
 	override function update(elapsed:Float)
 	{
+		if (FlxG.save.data.animFreq == 'none')
+		{
+			@:privateAccess
+			{
+				animation.curAnim.frameRate = flixel.math.FlxMath.MIN_VALUE_FLOAT;
+			}
+			if (animation.curAnim != null)
+				animation.curAnim.curFrame = 0;
+		}
+		else
+		{
+			animation.curAnim.frameRate = 24;
+		}
 		if (!curCharacter.startsWith('bf'))
 		{
-			if (animation.curAnim.name.startsWith('sing'))
+			if (animation.curAnim != null)
 			{
-				holdTimer += elapsed;
+				if (animation.curAnim.name.startsWith('sing'))
+				{
+					holdTimer += elapsed;
+				}
+			}
+			else
+			{
+				FlxG.log.error('error! $curCharacter' + ' has curAnim error!');
 			}
 
 			var dadVar:Float = 4;
@@ -594,14 +623,13 @@ class Character extends FlxSprite
 
 		if (endFrames != null)
 			coolArray.push(endFrames);
-		
+
 		return coolArray;
 	}
-	
-		/**
+
+	/**
 	 * FOR GF DANCING SHIT
 	 */
-	
 	public function dance()
 	{
 		if (!debugMode)
@@ -666,7 +694,15 @@ class Character extends FlxSprite
 
 	public function playAnim(AnimName:String, Force:Bool = false, Reversed:Bool = false, Frame:Int = 0):Void
 	{
-		animation.play(AnimName, Force, Reversed, Frame);
+		if (FlxG.save.data.animFreq != 'none')
+			animation.play(AnimName, Force, Reversed, Frame);
+		else
+		{
+			animation.play(AnimName, Force, Reversed, Frame);
+			/* where is hamilton source code :(
+			if (!Force)
+				FlxTween.tween(this, {y: lockedY + 75}, 0.4, {ease: FlxEase.quadOut, type: BACKWARD});*/
+		}
 
 		var daOffset = animOffsets.get(AnimName);
 		if (animOffsets.exists(AnimName))

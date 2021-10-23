@@ -49,6 +49,7 @@ class GameOverSubstate extends MusicBeatSubstate
 		// FlxG.camera.focusOn(FlxPoint.get(FlxG.width / 2, FlxG.height / 2));
 		FlxG.camera.scroll.set();
 		FlxG.camera.target = null;
+		FlxG.camera.focusOn(bf.getGraphicMidpoint());
 
 		bf.playAnim('firstDeath');
 	}
@@ -74,13 +75,13 @@ class GameOverSubstate extends MusicBeatSubstate
 
 		if (bf.animation.curAnim.name == 'firstDeath' && bf.animation.curAnim.curFrame == 12)
 		{
-			FlxG.camera.follow(camFollow, LOCKON, 0.01);
+			FlxG.camera.follow(camFollow, LOCKON, 0.04);
 			FlxTween.tween(FlxG.camera, {zoom: 1}, 0.7, {ease: FlxEase.quadOut});
 		}
 
 		if (bf.animation.curAnim.name == 'firstDeath' && bf.animation.curAnim.finished)
 		{
-			FlxG.sound.playMusic(Paths.music('gameOver' + stageSuffix));
+			FlxG.sound.playMusic(Paths.music('gameOver-SH' + stageSuffix));
 		}
 
 		if (FlxG.sound.music.playing)
@@ -109,9 +110,13 @@ class GameOverSubstate extends MusicBeatSubstate
 			new FlxTimer().start(0.7, function(tmr:FlxTimer)
 			{
 				FlxTween.tween(FlxG.camera, {zoom: 0.1}, 4, {ease: FlxEase.quadInOut});
-				FlxG.camera.fade(FlxColor.BLACK, 2, false, function()
-				{
-					LoadingState.loadAndSwitchState(new PlayState());
+				FlxTween.tween(FlxG.camera, {angle: FlxG.random.int(-8, 8)}, 4, {ease: FlxEase.quadInOut});
+				FlxTween.tween(FlxG.camera, {alpha: 0}, 2, {
+					ease: FlxEase.quadIn,
+					onComplete: function(twn:FlxTween)
+					{
+						LoadingState.loadAndSwitchState(new PlayState());
+					}
 				});
 			});
 		}

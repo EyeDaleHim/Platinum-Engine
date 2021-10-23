@@ -9,7 +9,7 @@ class CoolUtil
 	public static var difficultyArray:Array<String> = ['EASY', "NORMAL", "HARD"];
 
 	public static function difficultyString():String
-	{
+	{		
 		return difficultyArray[PlayState.storyDifficulty];
 	}
 
@@ -34,4 +34,22 @@ class CoolUtil
 		}
 		return dumbArray;
 	}
+
+	public static function isNullOrEmpty(string:String):Bool
+	{
+		if (string == null || string == '' || string == "")
+			return false;
+
+		return true;
+	}
+
+	public static function takeOutDuplicate<T>(array:Array<T>) {
+        var l = [];
+        for (v in array) {
+         	if (l.indexOf(v) == -1) { // array has not v
+            	l.push(v);
+            }
+         }
+        return l;
+    }
 }

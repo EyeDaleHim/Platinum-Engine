@@ -3,25 +3,31 @@ package;
 #if desktop
 import Discord.DiscordClient;
 #end
+import GameData.MenuStyles;
 import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.addons.transition.FlxTransitionableState;
-// might do this shit later: import flixel.addons.display.FlxBackdrop;
+import flixel.addons.transition.FlxTransitionSprite.GraphicTransTileDiamond;
+import flixel.addons.transition.TransitionData;
 import flixel.effects.FlxFlicker;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.group.FlxGroup.FlxTypedGroup;
+import flixel.math.FlxMath;
+import flixel.math.FlxPoint;
+import flixel.math.FlxRect;
 import flixel.text.FlxText;
+import flixel.graphics.FlxGraphic;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
-import flixel.math.FlxMath;
-// import io.newgrounds.NG;
-import lime.utils.Assets;
 import lime.app.Application;
+import lime.utils.Assets;
 
 using StringTools;
 
+// might do this shit later: import flixel.addons.display.FlxBackdrop;
+// import io.newgrounds.NG;
 class MainMenuState extends MusicBeatState
 {
 	var curSelected:Int = 0;
@@ -36,6 +42,8 @@ class MainMenuState extends MusicBeatState
 	override function create()
 	{
 		Settings.init();
+
+		initData();
 
 		#if desktop
 		// Updating Discord Rich Presence
@@ -89,7 +97,20 @@ class MainMenuState extends MusicBeatState
 			menuItem.animation.addByPrefix('selected', optionShit[i] + " white", 24);
 			menuItem.animation.play('idle');
 			menuItem.ID = i;
-			menuItem.screenCenter(X);
+			// menuItem.screenCenter(X);
+			switch (GameData.menuStyle)
+			{
+				case MenuStyles.LEFT:
+					menuItem.x -= 290;
+				case MenuStyles.MIDDLE:
+					menuItem.screenCenter(X);
+				case MenuStyles.RIGHT:
+					menuItem.x += 640;
+			}
+			#if !debug
+			if (optionShit[i] == 'options')
+				menuItem.setColorTransform(1, 1, 1, 1, -75, -75, -75, 0);
+			#end
 			menuItems.add(menuItem);
 			menuItem.scrollFactor.set(0.02, 0.02);
 			menuItem.antialiasing = true;
@@ -97,15 +118,18 @@ class MainMenuState extends MusicBeatState
 
 		FlxG.camera.follow(camFollow, null, 0.06);
 
-		var coolString:String = Assets.getText("version/version.txt");
+		if (GameData.showVersion)
+		{
+			var coolString:String = Assets.getText("version/version.txt");
 
-		var versionShit:FlxText = new FlxText(5, FlxG.height - 18, 0, coolString, 12);
-		versionShit.scrollFactor.set();
-		versionShit.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-		#if tester
-		versionShit += '-TESTER';
-		#end
-		add(versionShit);
+			var versionShit:FlxText = new FlxText(5, FlxG.height - 18, 0, coolString, 12);
+			versionShit.scrollFactor.set();
+			versionShit.setFormat(GameData.globalFont, 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+			#if tester
+			versionShit.text += '-TESTER';
+			#end
+			add(versionShit);
+		}
 
 		// NG.core.calls.event.logEvent('swag').send();
 
@@ -208,7 +232,6 @@ class MainMenuState extends MusicBeatState
 										trace("Story Menu Selected");
 									case 'freeplay':
 										FlxG.switchState(new FreeplayState());
-
 										trace("Freeplay Menu Selected");
 									case 'options':
 										FlxG.switchState(new SettingsMenu());
@@ -222,20 +245,30 @@ class MainMenuState extends MusicBeatState
 
 		super.update(elapsed);
 
-		menuItems.forEach(function(spr:FlxSprite)
+		if (GameData.menuStyle == MIDDLE)
 		{
-			spr.screenCenter(X);
-		});
+			menuItems.forEach(function(spr:FlxSprite)
+			{
+				spr.screenCenter(X);
+			});
+		}
 	}
 
 	function changeItem(change:Int = 0)
 	{
 		curSelected += change;
 
+		#if (!debug && tester)
+		if (curSelected >= menuItems.length - 1)
+			curSelected = 0;
+		if (curSelected < 0)
+			curSelected = menuItems.length - 2;
+		#else
 		if (curSelected >= menuItems.length)
 			curSelected = 0;
 		if (curSelected < 0)
 			curSelected = menuItems.length - 1;
+		#end
 
 		menuItems.forEach(function(spr:FlxSprite)
 		{
@@ -244,7 +277,16 @@ class MainMenuState extends MusicBeatState
 			if (spr.ID == curSelected)
 			{
 				spr.animation.play('selected');
-				camFollow.setPosition(spr.getGraphicMidpoint().x, spr.getGraphicMidpoint().y);
+				// camFollow.setPosition(spr.getGraphicMidpoint().x, spr.getGraphicMidpoint().y);
+				camFollow.setPosition(FlxG.width * 0.5, spr.getGraphicMidpoint().y);
+			}
+
+			if (GameData.menuStyle == MenuStyles.RIGHT)
+			{
+				if (spr.ID == 0 && spr.animation.curAnim.name == 'selected')
+					spr.x = 640 * 0.76;
+				else if (spr.ID == 0 && spr.animation.curAnim.name != 'selected')
+					spr.x = 640;
 			}
 
 			spr.updateHitbox();

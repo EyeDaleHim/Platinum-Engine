@@ -192,9 +192,6 @@ class SettingsGameplay extends MusicBeatState
 				else if (item == 'none')
 					item = 'simple';
 			}
-			else
-			{
-			}
 		}
 
 		trace(item);
