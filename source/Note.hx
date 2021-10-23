@@ -12,14 +12,25 @@ import polymod.format.ParseRules.TargetSignatureElement;
 using StringTools;
 using flixel.util.FlxColor;
 
+enum NoteType
+{
+	NORMAL;
+	SEAL;
+	HALO;
+}
+
 class Note extends FlxSprite
 {
 	public var strumTime:Float = 0;
 
 	public var formerHeight:Float = 0;
 
+	public var songOffset:Float = 0;
+
 	public var mustPress:Bool = false;
+	public var cannotBePressed:Bool = false;
 	public var noteData:Int = 0;
+	public var noteType:NoteType = NORMAL;
 	public var canBeHit:Bool = false;
 	public var tooLate:Bool = false;
 	public var wasGoodHit:Bool = false;
@@ -35,7 +46,7 @@ class Note extends FlxSprite
 
 	public static var swagWidth:Float = 160 * 0.7;
 
-	public function new(strumTime:Float, noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false)
+	public function new(strumTime:Float, noteData:Int, ?noteType:NoteType = NORMAL, ?prevNote:Note, ?sustainNote:Bool = false)
 	{
 		super();
 
@@ -49,7 +60,7 @@ class Note extends FlxSprite
 		// MAKE SURE ITS DEFINITELY OFF SCREEN?
 		y -= 2000;
 		this.strumTime = strumTime;
-
+		this.noteType = noteType;
 		this.noteData = noteData;
 
 		var daStage:String = PlayState.curStage;
@@ -83,26 +94,72 @@ class Note extends FlxSprite
 				updateHitbox();
 
 			default:
-				frames = Paths.getSparrowAtlas('NOTE_assets');
+				switch (noteType)
+				{
+					case NORMAL:
+						frames = Paths.getSparrowAtlas('NOTE_assets');
 
-				animation.addByPrefix('greenScroll', 'green0');
-				animation.addByPrefix('redScroll', 'red0');
-				animation.addByPrefix('blueScroll', 'blue0');
-				animation.addByPrefix('purpleScroll', 'purple0');
+						animation.addByPrefix('greenScroll', 'green0');
+						animation.addByPrefix('redScroll', 'red0');
+						animation.addByPrefix('blueScroll', 'blue0');
+						animation.addByPrefix('purpleScroll', 'purple0');
 
-				animation.addByPrefix('purpleholdend', 'pruple end hold');
-				animation.addByPrefix('greenholdend', 'green hold end');
-				animation.addByPrefix('redholdend', 'red hold end');
-				animation.addByPrefix('blueholdend', 'blue hold end');
+						animation.addByPrefix('purpleholdend', 'pruple end hold');
+						animation.addByPrefix('greenholdend', 'green hold end');
+						animation.addByPrefix('redholdend', 'red hold end');
+						animation.addByPrefix('blueholdend', 'blue hold end');
 
-				animation.addByPrefix('purplehold', 'purple hold piece');
-				animation.addByPrefix('greenhold', 'green hold piece');
-				animation.addByPrefix('redhold', 'red hold piece');
-				animation.addByPrefix('bluehold', 'blue hold piece');
+						animation.addByPrefix('purplehold', 'purple hold piece');
+						animation.addByPrefix('greenhold', 'green hold piece');
+						animation.addByPrefix('redhold', 'red hold piece');
+						animation.addByPrefix('bluehold', 'blue hold piece');
 
-				setGraphicSize(Std.int(width * 0.7));
-				updateHitbox();
-				antialiasing = FlxG.save.data.antialiasing;
+						setGraphicSize(Std.int(width * 0.7));
+						updateHitbox();
+						antialiasing = FlxG.save.data.antialiasing;
+					case SEAL:
+						frames = Paths.getSparrowAtlas('SEAL_assets');
+
+						animation.addByPrefix('greenScroll', 'green0');
+						animation.addByPrefix('redScroll', 'red0');
+						animation.addByPrefix('blueScroll', 'blue0');
+						animation.addByPrefix('purpleScroll', 'purple0');
+
+						animation.addByPrefix('purpleholdend', 'pruple end hold');
+						animation.addByPrefix('greenholdend', 'green hold end');
+						animation.addByPrefix('redholdend', 'red hold end');
+						animation.addByPrefix('blueholdend', 'blue hold end');
+
+						animation.addByPrefix('purplehold', 'purple hold piece');
+						animation.addByPrefix('greenhold', 'green hold piece');
+						animation.addByPrefix('redhold', 'red hold piece');
+						animation.addByPrefix('bluehold', 'blue hold piece');
+
+						setGraphicSize(Std.int(width * 0.7));
+						updateHitbox();
+						antialiasing = FlxG.save.data.antialiasing;
+					case HALO:
+						frames = Paths.getSparrowAtlas('HALO_assets');
+
+						animation.addByPrefix('greenScroll', 'green0');
+						animation.addByPrefix('redScroll', 'red0');
+						animation.addByPrefix('blueScroll', 'blue0');
+						animation.addByPrefix('purpleScroll', 'purple0');
+
+						animation.addByPrefix('purpleholdend', 'pruple end hold');
+						animation.addByPrefix('greenholdend', 'green hold end');
+						animation.addByPrefix('redholdend', 'red hold end');
+						animation.addByPrefix('blueholdend', 'blue hold end');
+
+						animation.addByPrefix('purplehold', 'purple hold piece');
+						animation.addByPrefix('greenhold', 'green hold piece');
+						animation.addByPrefix('redhold', 'red hold piece');
+						animation.addByPrefix('bluehold', 'blue hold piece');
+
+						setGraphicSize(Std.int(width * 0.7));
+						updateHitbox();
+						antialiasing = FlxG.save.data.antialiasing;
+				}
 		}
 
 		switch (noteData)
@@ -119,6 +176,15 @@ class Note extends FlxSprite
 			case 3:
 				x += swagWidth * 3;
 				animation.play('redScroll');
+		}
+
+		if (PlayState.SONG != null)
+		{
+			switch (PlayState.SONG.song.toLowerCase())
+			{
+				case 'dadbattle':
+					songOffset = 0.24;
+			}
 		}
 
 		// trace(prevNote);
@@ -151,29 +217,32 @@ class Note extends FlxSprite
 
 			if (prevNote.isSustainNote)
 			{
-				switch (prevNote.noteData)
+				if (noteType == NORMAL)
 				{
-					case 0:
-						prevNote.animation.play('purplehold');
-					case 1:
-						prevNote.animation.play('bluehold');
-					case 2:
-						prevNote.animation.play('greenhold');
-					case 3:
-						prevNote.animation.play('redhold');
+					switch (prevNote.noteData)
+					{
+						case 0:
+							prevNote.animation.play('purplehold');
+						case 1:
+							prevNote.animation.play('bluehold');
+						case 2:
+							prevNote.animation.play('greenhold');
+						case 3:
+							prevNote.animation.play('redhold');
+					}
 				}
 
 				var stepHeight = (((0.45 * Conductor.stepCrochet)) * FlxMath.roundDecimal(PlayState.SONG.speed, 2));
 
 				formerHeight = prevNote.scale.y;
-				
+
 				flipY = FlxG.save.data.downscroll;
 
 				// i had to copy from kade engine cuz im tired
 				prevNote.updateHitbox();
-				
-				prevNote.scale.y *= (stepHeight + 1.2) / prevNote.height;
-				
+
+				prevNote.scale.y *= (stepHeight + 1.2 + songOffset) / prevNote.height;
+
 				prevNote.updateHitbox();
 				if (FlxG.save.data.downscroll)
 					prevNote.noteYOff = Math.round(-prevNote.offset.y - 12);
@@ -183,13 +252,13 @@ class Note extends FlxSprite
 				// prevNote.setGraphicSize();
 
 				noteYOff = Math.round(-offset.y);
-				
+
 				/*// WHY GODDAMN IT!!!!
-				if (FlxG.save.data.downscroll)
-					prevNote.y -= prevNote.height * (1.5 * PlayState.SONG.speed * 1.5) + (Conductor.stepCrochet / 250) + 15;
-				else
-					prevNote.y += prevNote.height * (1.5 * PlayState.SONG.speed * 1.5) + (Conductor.stepCrochet / 250) + 15;
-				// prevNote.setGraphicSize();*/
+					if (FlxG.save.data.downscroll)
+						prevNote.y -= prevNote.height * (1.5 * PlayState.SONG.speed * 1.5) + (Conductor.stepCrochet / 250) + 15;
+					else
+						prevNote.y += prevNote.height * (1.5 * PlayState.SONG.speed * 1.5) + (Conductor.stepCrochet / 250) + 15;
+					// prevNote.setGraphicSize(); */
 			}
 		}
 	}
@@ -199,7 +268,7 @@ class Note extends FlxSprite
 		var stepHeight = (((0.45 * Conductor.stepCrochet)) * FlxMath.roundDecimal(PlayState.SONG.speed, 2));
 
 		prevNote.scale.y = formerHeight;
-		
+
 		prevNote.scale.y *= (stepHeight + 1.2) / prevNote.height;
 		prevNote.updateHitbox();
 		if (FlxG.save.data.downscroll)
@@ -217,16 +286,22 @@ class Note extends FlxSprite
 		super.update(elapsed);
 
 		// lol wtf
-		if (animation.curAnim.name.endsWith('end'))
-			flipY = FlxG.save.data.downscroll;
+		if (animation.curAnim != null)
+		{
+			if (animation.curAnim.name.endsWith('end'))
+				flipY = FlxG.save.data.downscroll;
+		}
 
 		prevNote.alpha = this.alpha;
+
+		if (noteType == HALO)
+			cannotBePressed = true;
 
 		if (mustPress)
 		{
 			// The * 0.5 is so that it's easier to hit them too late, instead of too early
 			if (strumTime > Conductor.songPosition - Conductor.safeZoneOffset
-				&& strumTime < Conductor.songPosition + (Conductor.safeZoneOffset * 0.5))
+				&& strumTime < Conductor.songPosition + (Conductor.safeZoneOffset * (isSustainNote ? cannotBePressed ? 0.3 : 0.5 : 1)))
 				canBeHit = true;
 			else
 				canBeHit = false;
@@ -244,8 +319,7 @@ class Note extends FlxSprite
 
 		if (tooLate)
 		{
-			if (alpha > 0.3)
-				alpha = 0.3;
+			alpha = FlxMath.lerp(alpha, 0, (0.12 * FlxMath.roundDecimal(PlayState.SONG.speed, 2)) / (60 * Main.framerate));
 		}
 	}
 }

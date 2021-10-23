@@ -245,8 +245,8 @@ class Alphabet extends FlxSpriteGroup
 			{
 				var scaledY = FlxMath.remapToRange(targetY, 0, 1, 0, 1.3);
 
-				y = FlxMath.lerp(y, (scaledY * 120) + (FlxG.height * 0.48), 0.16);
-				x = FlxMath.lerp(x, (targetY * 20) + 90 + coolThing /*(FlxG.width * 0.5) - (length * 20) - 95*/, 0.16);
+				y = FlxMath.lerp(y, (scaledY * 120) + (FlxG.height * 0.48), 0.16 * (60 / Main.framerate));
+				x = FlxMath.lerp(x, (targetY * 20) + 90 + coolThing /*(FlxG.width * 0.5) - (length * 20) - 95*/, 0.16 * (60 / Main.framerate));
 			}
 			else
 			{
@@ -276,6 +276,24 @@ class AlphaCharacter extends FlxSprite
 		frames = tex;
 
 		antialiasing = FlxG.save.data.antialiasing;
+	}
+
+	override function update(elapsed:Float)
+	{
+		super.update(elapsed);
+
+		if (FlxG.save.data.animFreq == 'none')
+		{
+			@:privateAccess
+			{
+				animation.curAnim.frameRate = flixel.math.FlxMath.MIN_VALUE_FLOAT;
+			}
+			animation.curAnim.curFrame = 0;
+		}
+		else
+		{
+			animation.curAnim.frameRate = 24;
+		}
 	}
 
 	public function createBold(letter:String)

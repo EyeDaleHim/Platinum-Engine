@@ -89,14 +89,15 @@ class PauseSubState extends MusicBeatSubstate
 		else
 			levelInfo.text += renameSong;
 		levelInfo.scrollFactor.set();
-		levelInfo.setFormat(Paths.font("vcr.ttf"), 32);
+		
+		levelInfo.setFormat(GameData.globalFont, 32);
 		levelInfo.updateHitbox();
 		add(levelInfo);
 
 		var levelDifficulty:FlxText = new FlxText(20, 15 + 32, 0, "", 32);
 		levelDifficulty.text += CoolUtil.difficultyString();
 		levelDifficulty.scrollFactor.set();
-		levelDifficulty.setFormat(Paths.font('vcr.ttf'), 32);
+		levelDifficulty.setFormat(GameData.globalFont, 32);
 		levelDifficulty.updateHitbox();
 		add(levelDifficulty);
 
@@ -122,11 +123,11 @@ class PauseSubState extends MusicBeatSubstate
 		}
 
 		selectTxt = new FlxText(0, 0, FlxG.width / 2.5, "", 24);
-		selectTxt.setFormat(Paths.font("vcr.ttf"), 24);
+		selectTxt.setFormat(GameData.globalFont, 24);
 		add(selectTxt);
 
 		settingsTxt = new FlxText(FlxG.width * 0.8, 560, 0, "a", 32);
-		settingsTxt.setFormat("assets/fonts/vcr.ttf", 32, FlxColor.WHITE, FlxTextAlign.LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		settingsTxt.setFormat(GameData.globalFont, 32, FlxColor.WHITE, FlxTextAlign.LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		settingsTxt.alpha = 0;
 
 		add(settingsTxt);
@@ -265,6 +266,7 @@ class PauseSubState extends MusicBeatSubstate
 			switch (daSelected)
 			{
 				case "Resume":
+					pauseMusic.volume = 0;
 					PlayState.isPaused = false;
 					close();
 				case "Restart Song":
@@ -379,9 +381,6 @@ class PauseSubState extends MusicBeatSubstate
 					FlxG.save.data.noteOffset
 				];
 				defaultValues = [null, false, false, 'simple', 'old', 0];
-
-			// force the game to stop playing music just in case
-			// FlxG.sound.music.stop();
 			case 4:
 				menuItems = ['graphics settings', 'graphic presets', 'antialiasing', 'Back'];
 				changeableValues = [null, FlxG.save.data.quality, FlxG.save.data.antialiasing];
@@ -589,7 +588,7 @@ class PauseSubState extends MusicBeatSubstate
 				}
 		}
 
-		Settings.save(changeableValues[selected], valueString);
+		Settings.oldSave(changeableValues[selected], valueString);
 	}
 
 	function changeSelection(change:Int = 0):Void

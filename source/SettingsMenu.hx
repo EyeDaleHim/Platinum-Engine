@@ -17,23 +17,25 @@ import flixel.tweens.FlxTween;
 import flixel.tweens.FlxEase;
 import flixel.system.FlxSound;
 
+using StringTools;
+
 class SettingsMenu extends MusicBeatState
 {
-	var category:String = 'none';
+	var curOptions:Array<Dynamic> = GameData.options[0];
 
-	var curOptions:Array<String> = ['options', 'gameplay', 'graphics', 'sounds', 'reset settings'];
-
-	var curSelected:Int = 0;
-	var grpItems:FlxTypedGroup<Alphabet>;
-	var coolString:String = "";
-	var dumbBitch:FlxText;
 	var menuBG:FlxSprite;
+	var grpItems:FlxTypedGroup<Alphabet>;
+
+	var curSelected:Int = 1;
+	var curCategory:Int = 0;
+
+	var curSelectedValue:Int;
+	var selectedValue:Dynamic;
+	var dumbBitch:FlxText;
+	var valueText:FlxText;
 
 	override function create()
 	{
-
-		Settings.init();
-
 		menuBG = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
 		menuBG.color = 0xFFea71fd;
 		menuBG.setGraphicSize(Std.int(menuBG.width * 1.1));
@@ -52,44 +54,197 @@ class SettingsMenu extends MusicBeatState
 		add(bottomBG);
 
 		dumbBitch = new FlxText(4, bottomBG.y, FlxG.width, "", Std.int(bottomBG.height - 2));
-		dumbBitch.setFormat("assets/fonts/vcr.ttf", Std.int(bottomBG.height - 2), FlxColor.WHITE, FlxTextAlign.LEFT, FlxTextBorderStyle.OUTLINE,
-			FlxColor.BLACK);
+		dumbBitch.setFormat(GameData.globalFont, Std.int(bottomBG.height - 2), FlxColor.WHITE, FlxTextAlign.LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		add(dumbBitch);
+
+		valueText = new FlxText(FlxG.width * 0.8, dumbBitch.y - 36, 0, 32);
+		valueText.setFormat(GameData.globalFont, 32, FlxColor.WHITE, FlxTextAlign.LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 
 		for (i in 0...curOptions.length)
 		{
-			var songText:Alphabet = new Alphabet(0, (70 * i) + 30, curOptions[i], true, false);
+			var songText:Alphabet = new Alphabet(0, (70 * i) + 30, curOptions[i][0], true, false);
 			songText.isMenuItem = true;
 			songText.targetY = i;
 			grpItems.add(songText);
 		}
 
+		add(valueText);
+
+		changeSelection();
+
 		super.create();
 	}
 
-	function changeCategory(category:String)
-	{
-		/*
-			this.category = category;
+	var isOnNum:Bool = false;
 
-			switch (category)
-			{
-				case 'gameplay':
-					curOptions = ['ghost tapping', 'new inputs', 'accuracy mode'];
-				default:
-					curOptions = ['options', 'gameplay', 'graphics', 'sounds'];
-			}
-		 */
+	override function update(elapsed:Float)
+	{
+		super.update(elapsed);
+
+		FlxG.watch.addQuick('category', curCategory);
+
+		if (controls.UP_P)
+			changeSelection(-1);
+		if (controls.DOWN_P)
+			changeSelection(1);
+		if (controls.ACCEPT)
+		{
+			if (curCategory == 0 && curSelected != 4)
+				changeCategory(curSelected);
+			else if (curSelected == 4 && curCategory == 0)
+				resetSettings();
+		}
+		if (controls.BACK)
+		{
+			if (curCategory == 0)
+				FlxG.switchState(new MainMenuState());
+			else
+				changeCategory(0);
+		}
+
+		if (curCategory != 0 && (!controls.RIGHT || !controls.LEFT))
+			selectedValue = curOptions[curSelected][3][curSelectedValue];
+
+		dumbBitch.text = curOptions[curSelected][1][curSelectedValue];
+
+		valueText.y = FlxMath.lerp(valueText.y, FlxG.height * 0.8, 0.16 * (60 / Main.framerate));
+
+		if (controls.RIGHT_P && curCategory != 0)
+			changeItem(false);
+		else if (controls.LEFT_P && curCategory != 0 && curSelectedValue != 0) // this extra condition is the unblight of my existence
+			changeItem(true);
+
+		if (curSelected == 5 && curCategory == 1)
+		{
+			isOnNum = true;
+
+			if (controls.RIGHT && !controls.LEFT)
+				selectedValue += 1;
+			if (controls.LEFT && !controls.RIGHT)
+				selectedValue -= 1;
+		}
+		else
+			isOnNum = false;
+
+		if ((!controls.RIGHT && !controls.LEFT) && isOnNum)
+		{
+			Settings.save(curOptions[curSelected][2], selectedValue);
+		}
+
+		if (curCategory == 0)
+			valueText.visible = false;
+		else
+			valueText.visible = true;
+
+		var textString:String = '';
+
+		if (curCategory != 0)
+		{
+			if (curOptions[curSelected][3][curSelectedValue - 1] != null /* || curSelectedValue != 0 || (curSelectedValue == 1 || curSelectedValue >= 1)*/)
+				textString += '< ';
+		}
+
+		if ('$selectedValue'.endsWith('true'))
+			textString += 'on';
+		else if ('$selectedValue'.endsWith('false'))
+			textString += 'off';
+		else
+			textString += selectedValue;
+
+		if (curCategory != 0)
+		{
+			if (curOptions[curSelected][3][curSelectedValue + 1] != null)
+				textString += ' >';
+		}
+
+		valueText.text = textString.toUpperCase();
 	}
 
-	function changeSelection(change:Int = 0)
+	function resetSettings():Void
 	{
-		var coolCategory:String = 'none';
+		Settings.reset(null, true);
 
-		coolCategory = this.category;
+		FlxTween.cancelTweensOf(menuBG);
+		menuBG.color = FlxColor.RED;
 
-		trace(coolCategory);
+		FlxTween.color(menuBG, 0.7, FlxColor.RED, 0xFFea71fd, {ease: FlxEase.expoOut});
+	}
 
+	function changeItem(back:Bool):Void
+	{
+		if (curSelectedValue >= curOptions[curSelected][3].length - 1)
+			curSelectedValue = 0;
+		else if (curSelectedValue < 0 || curSelectedValue == -1)
+			curOptions[curSelected][3].length - 1;
+		else
+		{
+			if (!back)
+				curSelectedValue++;
+			else
+				curSelectedValue--;
+		}
+
+		if (curSelectedValue == -1)
+			curOptions[curSelected][3].length - 1;
+
+		var a = curOptions[curSelected][3];
+		var b = curOptions[curSelected][3].length - 1;
+		var c = curOptions[curSelected][3].length;
+
+		trace('$curSelectedValue, $a, $b, $c');
+
+		// prevent soft-lock crashes
+		var looped:Int = 0;
+
+		while (curOptions[curSelected][3][curSelectedValue] == null)
+		{
+			looped++;
+
+			/*
+				if (curSelectedValue > curOptions[curSelected][3].length - 1)
+					curSelectedValue = 0;
+				else
+				{
+					if (curOptions[curSelected][3][curSelectedValue + 1] != null)
+						curSelectedValue++;
+					else
+						curSelectedValue--;
+			}*/
+
+			curOptions[curSelected][2] = curOptions[curSelected][3][curSelectedValue];
+
+			if (curOptions[curSelected][3][curSelectedValue] != null || looped >= 20)
+				break;
+		}
+
+		curOptions[curSelected][2] = curOptions[curSelected][3][curSelectedValue];
+		// Type.getClass(curOptions[curSelected][3][curSelectedValue])
+
+		Settings.oldSave(curOptions[curSelected][3][curSelectedValue], curOptions[curSelected][6]);
+	}
+
+	function changeCategory(category:Int = 0):Void
+	{
+		curOptions = GameData.options[category];
+		curCategory = category;
+
+		grpItems.clear();
+
+		for (i in 0...curOptions.length)
+		{
+			var songText:Alphabet = new Alphabet(0, (70 * i) + 30, curOptions[i][0], true, false);
+			songText.isMenuItem = true;
+			songText.targetY = i;
+			grpItems.add(songText);
+		}
+
+		curSelected = 1;
+
+		changeSelection();
+	}
+
+	function changeSelection(change:Int = 0):Void
+	{
 		if (curSelected != 0)
 		{
 			if (FlxG.save.data.soundVolume > 0.4)
@@ -100,10 +255,21 @@ class SettingsMenu extends MusicBeatState
 
 		curSelected += change;
 
-		if (curSelected < 1)
-			curSelected = curOptions.length - 1;
+		valueText.y -= 36;
+
+		if (curSelected == 0)
+			curSelected = curOptions.length;
 		if (curSelected >= curOptions.length)
 			curSelected = 1;
+
+		if (curCategory != 0)
+		{
+			for (i in 0...curOptions[curSelected][3].length)
+			{
+				if (curOptions[curSelected][3][i] == curOptions[curSelected][2])
+					curSelectedValue = i;
+			}
+		}
 
 		var bullShit:Int = 0;
 
@@ -112,19 +278,7 @@ class SettingsMenu extends MusicBeatState
 			item.targetY = bullShit - curSelected;
 			bullShit++;
 
-			switch (curSelected)
-			{
-				case 1:
-					coolString = "Change the way you play your games.";
-				case 2:
-					coolString = "Change the way your games look.";
-				case 3:
-					coolString = "Change the way of how you hear the game's sounds.";
-				case 4:
-					coolString = "Reset your settings to default.";
-			}
-
-			if (item.text != 'options')
+			if (item.text != 'gameplay settings')
 			{
 				item.alpha = 0.6;
 				item.selected = false;
@@ -134,62 +288,6 @@ class SettingsMenu extends MusicBeatState
 			{
 				item.selected = true;
 				item.alpha = 1;
-			}
-		}
-	}
-
-	/* got lazy
-		 var isInNotify:Bool = false;
-		var notifySprite:FlxSprite;
-
-		function notifyDelete():Void
-		{
-			inInNotify = true;
-			notifySprite = new FlxSprite(FlxG.width * 0.5)
-		}
-	 */
-	override function update(elapsed:Float)
-	{
-		super.update(elapsed);
-
-		dumbBitch.text = coolString;
-
-		FlxG.sound.music.volume = FlxG.save.data.musicVolume / 100;
-
-		var upP = controls.UP_P;
-		var downP = controls.DOWN_P;
-		var rightP = controls.RIGHT_P;
-		var leftP = controls.LEFT_P;
-		var accepted = controls.ACCEPT;
-		var back = controls.BACK;
-
-		if (upP)
-		{
-			changeSelection(-1);
-		}
-		if (downP || curSelected == 0)
-		{
-			changeSelection(1);
-		}
-		if (back)
-		{
-			// if (!isInNotify)
-			FlxG.switchState(new MainMenuState());
-		}
-		if (accepted)
-		{
-			switch (curSelected)
-			{
-				case 1:
-					FlxG.switchState(new SettingsGameplay());
-				case 2:
-					FlxG.switchState(new SettingsGraphics());
-				case 3:
-					FlxG.switchState(new SettingsSounds());
-				case 4:
-					Settings.reset('downscroll', true);
-					menuBG.color = 0xFFFF2137;
-					FlxTween.color(menuBG, 0.8, 0xFFFF2137, 0xFFea71fd, {ease: FlxEase.quintOut});
 			}
 		}
 	}

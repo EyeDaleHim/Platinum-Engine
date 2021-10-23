@@ -25,6 +25,7 @@ import flixel.text.FlxText;
 import flixel.ui.FlxButton;
 import flixel.ui.FlxSpriteButton;
 import flixel.util.FlxColor;
+import flixel.util.FlxSave;
 import flixel.util.FlxStringUtil;
 import haxe.Json;
 import lime.utils.Assets;
@@ -33,6 +34,7 @@ import openfl.events.IOErrorEvent;
 import openfl.media.Sound;
 import openfl.net.FileReference;
 import openfl.utils.ByteArray;
+import Note.NoteType;
 
 using StringTools;
 
@@ -71,6 +73,9 @@ class ChartingState extends MusicBeatState
 	var clickNotes:Bool = false;
 
 	var gridBG:FlxSprite;
+
+	var selectedType:Int = 0;
+	var noteTypes:Array<NoteType> = [NORMAL, SEAL, HALO]; 
 
 	var _song:SwagSong;
 
@@ -142,7 +147,12 @@ class ChartingState extends MusicBeatState
 
 		FlxG.mouse.visible = true;
 		// ok but why are we binding
-		FlxG.save.bind(Main.modName, Sys.getEnv("USERNAME"));
+		#if desktop
+		FlxG.save.bind(GameData.modName, Sys.getEnv("USERNAME"));
+		#else
+		saveData = new FlxSave();
+		saveData.bind(GameData.modName + '_html5');
+		#end
 
 		tempBpm = _song.bpm;
 
@@ -511,8 +521,16 @@ class ChartingState extends MusicBeatState
 		curStep = recalculateSteps();
 		clickNotes = clickNoteCheck.checked;
 
-		background.x -= 0.45 / (120 / 60);
-		background.y -= 0.16 / (120 / 60);
+		background.x -= 0.45 / (60 / Main.framerate);
+		background.y -= 0.16 / (60 / Main.framerate);
+
+		if (FlxG.keys.justPressed.ALT)
+		{
+			if (selectedType >= 2)
+				selectedType = 0;
+			else
+				selectedType++;
+		}
 
 		curRenderedNotes.forEach(function(spr:FlxSprite)
 		{
@@ -751,7 +769,8 @@ class ChartingState extends MusicBeatState
 			+ Std.string(FlxMath.roundDecimal(Conductor.songPosition / 1000, 2))
 			+ " / "
 			+ Std.string(FlxMath.roundDecimal(FlxG.sound.music.length / 1000, 2))
-			+ '\nSection: $curSection \nBeat: $curBeat \nStep: $curStep';
+			+ '\nSection: $curSection \nBeat: $curBeat \nStep: $curStep'
+			+ '\nNoteType: ' + noteTypes[selectedType];
 		super.update(elapsed);
 	}
 
@@ -792,23 +811,17 @@ class ChartingState extends MusicBeatState
 	// Removes Notes that are not on the grid. Doesn't count for hold notes that could be beneath the grid.
 	function cleanUpSection()
 	{
-		// do it three times to definitely remove them??
 		curRenderedNotes.forEach(function(note:Note)
 		{
-			if (note.y < gridBG.y)
+			var daLoop:Int = 0;
+			while (note.y <= gridBG.y)
+			{
 				deleteNote(note);
-		});
 
-		curRenderedNotes.forEach(function(note:Note)
-		{
-			if (note.y < gridBG.y)
-				deleteNote(note);
-		});
-
-		curRenderedNotes.forEach(function(note:Note)
-		{
-			if (note.y < gridBG.y)
-				deleteNote(note);
+				daLoop++;
+				if (daLoop >= 20)
+					break;
+			}
 		});
 	}
 
@@ -964,8 +977,9 @@ class ChartingState extends MusicBeatState
 			var daNoteInfo = i[1];
 			var daStrumTime = i[0];
 			var daSus = i[2];
+			var daType = i[3];
 
-			var note:Note = new Note(daStrumTime, daNoteInfo % 4);
+			var note:Note = new Note(daStrumTime, daNoteInfo % 4, daType);
 			note.sustainLength = daSus;
 			note.setGraphicSize(GRID_SIZE, GRID_SIZE);
 			note.updateHitbox();
@@ -1052,14 +1066,15 @@ class ChartingState extends MusicBeatState
 		var noteStrum = getStrumTime(dummyArrow.y) + sectionStartTime();
 		var noteData = Math.floor(FlxG.mouse.x / GRID_SIZE);
 		var noteSus = 0;
+		var noteCurType = noteTypes[selectedType];
 
-		_song.notes[curSection].sectionNotes.push([noteStrum, noteData, noteSus]);
+		_song.notes[curSection].sectionNotes.push([noteStrum, noteData, noteSus, noteCurType]);
 
 		curSelectedNote = _song.notes[curSection].sectionNotes[_song.notes[curSection].sectionNotes.length - 1];
 
 		if (FlxG.keys.pressed.ONE)
 		{
-			_song.notes[curSection].sectionNotes.push([noteStrum, (noteData + 4) % 8, noteSus]);
+			_song.notes[curSection].sectionNotes.push([noteStrum, (noteData + 4) % 8, noteSus, noteCurType]);
 		}
 
 		trace(noteStrum);
@@ -1129,18 +1144,60 @@ class ChartingState extends MusicBeatState
 		FlxG.resetState();
 	}
 
+	function loadBlank():Void
+	{
+		_song = {
+			song: 'Test',
+			notes: [],
+			// cameraBeat: [],
+			bpm: 150,
+			needsVoices: true,
+			player1: 'bf',
+			player2: 'dad',
+			gf: 'gf',
+			speed: 1,
+			camera: false,
+			validScore: false
+		};
+
+		PlayState.SONG = _song;
+
+		FlxG.resetState();
+	}
+
 	function loadAutosave():Void
 	{
-		PlayState.SONG = Song.parseJSONshit(FlxG.save.data.autosave);
+		PlayState.SONG = Song.parseJSONshit(grabDaSave());
+		if (PlayState.SONG == null)
+		{
+			loadBlank();
+			return;
+		}
 		FlxG.resetState();
+	}
+
+	function grabDaSave():Dynamic
+	{
+		var savedChart:FlxSave = new FlxSave();
+
+		savedChart.bind(GameData.modName + '-autoSavedC');
+
+		if (savedChart.data.autosave == null)
+			autosaveSong();
+
+		return savedChart.data.autosave;
 	}
 
 	function autosaveSong():Void
 	{
-		FlxG.save.data.autosave = Json.stringify({
+		var savedChart:FlxSave = new FlxSave();
+
+		savedChart.bind(GameData.modName + '-autoSavedC');
+
+		savedChart.data.autosave = Json.stringify({
 			"song": _song
 		});
-		FlxG.save.flush();
+		savedChart.flush();
 	}
 
 	private function saveLevel()
@@ -1190,6 +1247,6 @@ class ChartingState extends MusicBeatState
 		_file.removeEventListener(Event.CANCEL, onSaveCancel);
 		_file.removeEventListener(IOErrorEvent.IO_ERROR, onSaveError);
 		_file = null;
-		FlxG.log.error("Problem saving Level data");
+		FlxG.log.error("Problem saving Level data, Try again.");
 	}
 }

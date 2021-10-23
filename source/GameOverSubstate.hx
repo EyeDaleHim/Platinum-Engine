@@ -105,13 +105,18 @@ class GameOverSubstate extends MusicBeatSubstate
 			isEnding = true;
 			bf.playAnim('deathConfirm', true);
 			FlxG.sound.music.stop();
+			FlxG.camera.follow(camFollow, LOCKON, 0.01);
 			FlxG.sound.play(Paths.music('gameOverEnd' + stageSuffix));
 			new FlxTimer().start(0.7, function(tmr:FlxTimer)
 			{
 				FlxTween.tween(FlxG.camera, {zoom: 0.1}, 4, {ease: FlxEase.quadInOut});
-				FlxG.camera.fade(FlxColor.BLACK, 2, false, function()
-				{
-					LoadingState.loadAndSwitchState(new PlayState());
+				FlxTween.tween(FlxG.camera, {angle: FlxG.random.int(-8, 8)}, 4, {ease: FlxEase.quadInOut});
+				FlxTween.tween(FlxG.camera, {alpha: 0}, 2, {
+					ease: FlxEase.quadIn,
+					onComplete: function(twn:FlxTween)
+					{
+						LoadingState.loadAndSwitchState(new PlayState());
+					}
 				});
 			});
 		}

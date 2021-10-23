@@ -5,6 +5,8 @@ import flixel.graphics.frames.FlxAtlasFrames;
 import openfl.utils.AssetType;
 import openfl.utils.Assets as OpenFlAssets;
 
+using StringTools;
+
 class Paths
 {
 	inline public static var SOUND_EXT = #if web "mp3" #else "ogg" #end;
@@ -106,9 +108,12 @@ class Paths
 		return getPath('images/$key.png', IMAGE, library);
 	}
 
-	inline static public function font(key:String)
+	static public function font(key:String, fontType:String = 'ttf')
 	{
-		return 'assets/fonts/$key';
+		if (key.endsWith('ttf') || key.endsWith('otf'))
+			return 'assets/fonts/$key';
+
+		return 'assets/fonts/$key.$fontType';
 	}
 
 	inline static public function getSparrowAtlas(key:String, ?library:String)

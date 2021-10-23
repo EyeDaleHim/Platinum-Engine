@@ -5,9 +5,12 @@ import Controls;
 import flixel.FlxCamera;
 import flixel.FlxG;
 import flixel.util.FlxSignal;
+import lime.utils.Assets;
 
 // import ui.DeviceManager;
 // import props.Player;
+using StringTools;
+
 class PlayerSettings
 {
 	static public var numPlayers(default, null) = 0;
@@ -117,26 +120,49 @@ class PlayerSettings
 
 	 */
 	static public function setBindingsFromSave():Void
-	{	
+	{
 		// LEFT, DOWN, UP, RIGHT
 		var savedKeys:Array<FlxKey> = [];
 		var defaultKeys:Array<FlxKey> = [FlxKey.A, FlxKey.S, FlxKey.W, FlxKey.D];
 		var keyOrder:Array<Control> = [LEFT, DOWN, UP, RIGHT];
 		// savedKeys = [FlxG.save.data.leftBind, FlxG.save.data.downBind, FlxG.save.data.upBind, FlxG.save.data.rightBind];
 		savedKeys = [FlxKey.D, FlxKey.F, FlxKey.J, FlxKey.K];
-		
+
 		for (i in 0...savedKeys.length)
 		{
 			/* i forgot that you cant set nulls on this thing
-			if (savedKeys[i] == null)
-			{
-				// use default instead
-				savedKeys[i] = defaultKeys[i];
+				if (savedKeys[i] == null)
+				{
+					// use default instead
+					savedKeys[i] = defaultKeys[i];
 			}*/
 			player1.controls.replaceBinding(keyOrder[i], Keys, savedKeys[i], defaultKeys[i]);
 		}
 	}
-	 
+
+	static public function setBindingsFromFile():Void
+	{
+		var keyTxt:String = Assets.getText('keyBind.txt');
+
+		var defaultKeys:Array<FlxKey> = [FlxKey.A, FlxKey.S, FlxKey.W, FlxKey.D];
+		var keyOrder:Array<Control> = [LEFT, DOWN, UP, RIGHT];
+
+		if (keyTxt.length <= 3)
+		{
+			keyTxt = '';
+			for (i in 0...defaultKeys.length)
+			{
+				keyTxt += defaultKeys[i].toString();
+			}
+		}
+
+		for (i in 0...defaultKeys.length)
+		{
+			if (keyTxt.charAt(i) != null || keyTxt.charAt(i) != '')
+				player1.controls.replaceBinding(keyOrder[i], Keys, FlxKey.fromString(keyTxt.charAt(i)), defaultKeys[i]);
+		}
+	}
+
 	static public function init():Void
 	{
 		if (player1 == null)
@@ -144,7 +170,7 @@ class PlayerSettings
 			player1 = new PlayerSettings(0, Solo);
 			++numPlayers;
 		}
-		
+
 		Settings.init();
 
 		var numGamepads = FlxG.gamepads.numActiveGamepads;

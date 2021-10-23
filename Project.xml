@@ -32,6 +32,10 @@
 	<!--Switch-specific-->
 	<window if="switch" orientation="landscape" fullscreen="true" width="0" height="0" resizable="true" />
 
+	<!-- ___________________________ Platinum Engine ___________________________ -->
+	
+	<!--<define name="tester" if="windows" />-->
+
 	<!-- _____________________________ Path Settings ____________________________ -->
 
 	<set name="BUILD_DIR" value="export/debug" if="debug" />
@@ -98,6 +102,7 @@
 	<assets path="dlls/" rename='' if="windows"/>
 	
 	<assets path='art/readme.txt' rename='do NOT readme.txt' />
+	<assets path='art/keyBind.txt' rename='keyBind.txt' />
 	<!-- <template path='mods' /> -->
 	
 	<assets path="CHANGELOG.md" rename='changelog.txt'/>
@@ -126,7 +131,7 @@
 	<haxelib name="faxe" if='switch'/>
 	<!-- <haxelib name="polymod"/> -->
 	<haxelib name="discord_rpc" if="desktop"/>
-	<!-- <haxelib name="hxcpp-debug-server" if="desktop"/> -->
+	<haxelib name="hxcpp-debug-server" if="desktop"/>
 
 	<!-- <haxelib name="markdown" /> -->
 	<!-- <haxelib name="HtmlParser" /> -->

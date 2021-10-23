@@ -20,7 +20,7 @@ class OutdatedSubState extends MusicBeatState
 		var txt:FlxText = new FlxText(0, 0, FlxG.width,
 			"NOTE: "
 			+ "\nYou are using an unfinished build of the full release. New features are subject to change."
-			+ "\nCurrent version is v1.02",
+			+ "\nCurrent version is v1.03 - BETA V1.5",
 			32);
 		txt.setFormat("VCR OSD Mono", 32, FlxColor.WHITE, CENTER);
 		txt.screenCenter();

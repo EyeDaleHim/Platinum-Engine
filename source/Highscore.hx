@@ -6,11 +6,11 @@ class Highscore
 {
 	#if (haxe >= "4.0.0")
 	public static var songScores:Map<String, Int> = new Map();
+	public static var songAccuracy:Map<String, Float> = new Map();
 	#else
 	public static var songScores:Map<String, Int> = new Map<String, Int>();
-	#end
-
 	public static var songAccuracy:Map<String, Float> = new Map<String, Float>();
+	#end
 
 
 	public static function saveAccuracy(song:String, accuracy:Float = 0, ?diff:Int = 0):Void

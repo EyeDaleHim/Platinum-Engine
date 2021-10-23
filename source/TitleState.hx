@@ -26,6 +26,9 @@ import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
+#if web
+import flixel.util.FlxSave;
+#end
 // import io.newgrounds.NG;
 import lime.app.Application;
 import openfl.Assets;
@@ -41,6 +44,8 @@ class TitleState extends MusicBeatState
 	#end
 	public static var initialized:Bool = false;
 
+	public static var daSettings:Array<Dynamic>;
+
 	var coolBool:Bool = false;
 
 	var exitSprite:FlxSprite;
@@ -55,14 +60,13 @@ class TitleState extends MusicBeatState
 
 	var wackyImage:FlxSprite;
 	var isInExit:Bool = false;
-
+	
 	override public function create():Void
 	{
-		PlayerSettings.init();
-		PlayerSettings.setBindingsFromSave();
-
 		followCam = new FlxObject(FlxG.width * 0.5, FlxG.height * 0.5);
 		curWacky = FlxG.random.getObject(getIntroTextShit());
+
+		// persistentUpdate = persistentDraw = true;
 
 		FlxG.camera.follow(followCam, 1);
 
@@ -74,10 +78,17 @@ class TitleState extends MusicBeatState
 
 		super.create();
 
+		#if !web
 		trace("User data is " + Sys.getEnv("USERNAME"));
-		FlxG.save.bind(Main.modName, Sys.getEnv("USERNAME"));
+		FlxG.save.bind(GameData.modName, Sys.getEnv("USERNAME"));
+		#else
+		saveData = new FlxSave();
+		saveData.bind(GameData.modName + '_html5');
+		#end
 
+		PlayerSettings.init();
 		Highscore.load();
+		// daSettings = GameData.getSettings();
 
 		if (FlxG.save.data.weekUnlocked != null)
 		{
@@ -154,8 +165,10 @@ class TitleState extends MusicBeatState
 		add(bg);
 
 		logoBl = new FlxSprite(-150, -100);
-		logoBl.frames = FlxAtlasFrames.fromSparrow('platinumlogo/Platinum_Logo_Bumpin.png', 'platinumlogo/Platinum_Logo_Bumpin.xml');
-		// logoBl.frames = Paths.getSparrowAtlas('logoBumpin');
+		if (GameData.platinumLogo)
+			logoBl.frames = FlxAtlasFrames.fromSparrow('platinumlogo/Platinum_Logo_Bumpin.png', 'platinumlogo/Platinum_Logo_Bumpin.xml');
+		else
+			logoBl.frames = Paths.getSparrowAtlas('logoBumpin');
 		logoBl.antialiasing = FlxG.save.data.antialiasing;
 		logoBl.animation.addByPrefix('bump', 'logo bumpin', 24);
 		logoBl.animation.play('bump');
@@ -292,6 +305,7 @@ class TitleState extends MusicBeatState
 			#end
 		}
 
+		#if desktop
 		if (pressedEnter)
 		{
 			if (isInExit)
@@ -299,6 +313,7 @@ class TitleState extends MusicBeatState
 				System.exit(0);
 			}
 		}
+		#end
 
 		if (curBeat > 16 && skippedIntro)
 		{
@@ -411,6 +426,7 @@ class TitleState extends MusicBeatState
 
 	override function beatHit()
 	{
+		
 		super.beatHit();
 
 		// FlxTween.tween(followCam, {x: FlxG.width * FlxG.random.float(0.47, 0.53), y: FlxG.height * FlxG.random.float(0.49, 0.51)}, 1, {ease: FlxEase.quadInOut});
