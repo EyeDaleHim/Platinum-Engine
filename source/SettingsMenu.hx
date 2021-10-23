@@ -151,6 +151,11 @@ class SettingsMenu extends MusicBeatState
 		else
 			textString += selectedValue;
 
+		if ('$selectedValue' == 'combo calculation')
+			valueText.x = FlxG.width * 0.65;
+		else
+			valueText.x = FlxG.width * 0.8;
+
 		if (curCategory != 0)
 		{
 			if (curOptions[curSelected][3][curSelectedValue + 1] != null)
