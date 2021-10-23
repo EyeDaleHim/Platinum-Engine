@@ -32,6 +32,10 @@
 	<!--Switch-specific-->
 	<window if="switch" orientation="landscape" fullscreen="true" width="0" height="0" resizable="true" />
 
+	<!-- ___________________________ Platinum Engine ___________________________ -->
+	
+	<define name="tester" if="windows" />
+
 	<!-- _____________________________ Path Settings ____________________________ -->
 
 	<set name="BUILD_DIR" value="export/debug" if="debug" />
@@ -90,6 +94,7 @@
 	<assets path="assets/week5"    library="week5"    exclude="*.mp3" unless="web"/>
 	<assets path="assets/week6"    library="week6"    exclude="*.ogg" if="web"/>
 	<assets path="assets/week6"    library="week6"    exclude="*.mp3" unless="web"/>
+
 
 	<assets path="assets/videos" exclude="*.mp3" if="web"/>
 	<assets path="assets/videos" exclude="*.ogg" unless="web"/>
