@@ -361,7 +361,6 @@ class PlayState extends MusicBeatState
 
 						spookySmokeFG = new FlxSprite(-300, -100).loadGraphic(Paths.image('smokeFG'));
 						spookySmokeFG.antialiasing = antialiasing;
-						FlxTween.tween(spookySmokeFG, {x: -200}, (Conductor.crochet / 1000) * 12, {ease: FlxEase.smoothStepInOut, type: PINGPONG});
 						spookySmokeFG.setGraphicSize(Std.int(spookySmokeFG.width * 1.6));
 
 						spookOverlay = new FlxSprite(-1000, -1000).makeGraphic(FlxG.width * 10, FlxG.height * 10, 0xFF164987);
@@ -2902,17 +2901,17 @@ class PlayState extends MusicBeatState
 
 		var daRating:String = "sick";
 
-		if (noteDiff > Conductor.safeZoneOffset * 0.9)
+		if (noteDiff > 135)
 		{
 			daRating = 'shit';
 			comboList[3]++;
 		}
-		else if (noteDiff > Conductor.safeZoneOffset * 0.75)
+		else if (noteDiff > 90)
 		{
 			daRating = 'bad';
 			comboList[2]++;
 		}
-		else if (noteDiff > Conductor.safeZoneOffset * 0.2)
+		else if (noteDiff > 45)
 		{
 			daRating = 'good';
 			comboList[1]++;
@@ -2932,12 +2931,27 @@ class PlayState extends MusicBeatState
 			trace(differ);
 		}
 
-		if (accuracyType == 'complex')
+		if (accuracyType == 'wife3')
 		{
 			if (FlxG.save.data.botplay)
 				totalRanksHit += AccuracyHelper.wif3(differ, Conductor.safeZoneOffset / 166);
 			else
 				totalRanksHit += AccuracyHelper.wif3(noteDiff, Conductor.safeZoneOffset / 166);
+		}
+		else if (accuracyType == 'combo rating')
+		{
+			if (daRating == 'sick')
+				totalRanksHit += 1;
+			else if (daRating == 'good')
+				totalRanksHit += 0.75;
+			else if (daRating == 'bad')
+				totalRanksHit += 0.50;
+			else if (daRating == 'shit')
+				totalRanksHit += 0.25;
+		}
+		else if (accuracyType == 'combo calculation')
+		{
+			totalRanksHit += 1 - (noteDiff / Conductor.safeZoneOffset);
 		}
 		else
 		{
@@ -2969,7 +2983,7 @@ class PlayState extends MusicBeatState
 		addedScoreText.setFormat(GameData.globalFont, 24, FlxColor.WHITE, CENTER, OUTLINE, FlxColor.BLACK);
 		addedScoreText.text = '(+$score)';
 		addedScoreText.screenCenter();
-		addedScoreText.x -= 190 - (1.5 * scoreTxt.text.length);
+		addedScoreText.x -= 190 - (1.9 * scoreTxt.text.length);
 		addedScoreText.y = scoreTxt.y + scoreTxt.height + 4;
 		addedScoreText.cameras = [camHUD];
 		add(addedScoreText);
