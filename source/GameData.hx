@@ -73,13 +73,14 @@ class GameData
 				[
 					'accuracy type',
 					[
-						'Simple calculates your accuracy by rating.',
-						'Complex calculates your accuracy based on time of hit. (Uses Etterna Wife3)',
+						'This algorithm calculates your accuracy by rating.',
+						'Wife3 calculates your accuracy based on time of hit. (Uses Etterna Wife3)',
+						'This calculates accuracy based on this formula: (Note Difference / Safe Zone Offset)',
 						'Do not show the accuracy'
 					],
 					FlxG.save.data.accuracy,
-					['simple', 'complex', 'none'],
-					'simple',
+					['combo rating', 'wife3', 'combo calculation', 'none'],
+					'combo rating',
 					0,
 					'accuracy'
 				],
