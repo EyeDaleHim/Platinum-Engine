@@ -921,6 +921,7 @@ class PlayState extends MusicBeatState
 		timerText = new FlxText(healthBarBG.x - 105, downscroll ? FlxG.height * 0.9 : FlxG.height * 0.1, 800, "", 30);
 		timerText.y = strumLine.y + 45;
 		timerText.screenCenter(X);
+		timerText.x -= 20;
 		timerText.setFormat(GameData.globalFont, 30, FlxColor.WHITE, FlxTextAlign.CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		timerText.scrollFactor.set();
 
@@ -2584,6 +2585,24 @@ class PlayState extends MusicBeatState
 						daNote.alpha = 0.3;
 					else
 						daNote.alpha = 1;
+				}
+				if (daNote.isSustainNote)
+				{
+					if (daNote.mustPress)
+						daNote.x = (playerStrums.members[Math.floor(Math.abs(daNote.noteData))].x) + 37;
+					else
+						daNote.x = (enemyStrums.members[Math.floor(Math.abs(daNote.noteData))].x) + 37;
+				}
+				else
+				{
+					if (daNote.mustPress)
+					{
+						daNote.x = (playerStrums.members[Math.floor(Math.abs(daNote.noteData))].x);
+					}
+					else
+					{
+						daNote.x = (enemyStrums.members[Math.floor(Math.abs(daNote.noteData))].x);
+					}
 				}
 				// sorry kade dev :(
 				if (downscroll)
