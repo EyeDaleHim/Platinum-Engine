@@ -1,13 +1,16 @@
 package;
 
+import flixel.FlxSprite;
 import flixel.util.FlxSave;
 #if desktop
 import Discord.DiscordClient;
 #end
 import Conductor.BPMChangeEvent;
+import MathUtils.Number;
 import flixel.FlxG;
 import flixel.FlxState;
 import flixel.FlxGame;
+import flixel.FlxCamera;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.addons.transition.FlxTransitionSprite.GraphicTransTileDiamond;
 import flixel.addons.transition.TransitionData;
@@ -18,11 +21,15 @@ import flixel.system.ui.FlxSoundTray;
 import flixel.graphics.FlxGraphic;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
+import flixel.tweens.FlxTween;
+import flixel.tweens.FlxEase;
 import lime.app.Application;
 
 class MusicBeatState extends FlxUIState
 {
 	public static var currentState:FlxState;
+
+	public static var wasTransIn:Bool = false;
 
 	// html5
 	#if web
@@ -38,6 +45,9 @@ class MusicBeatState extends FlxUIState
 	private var curBeat:Int = 0;
 	private var controls(get, never):Controls;
 
+	public var allowFading:Bool = false;
+	public var darkenBG:FlxSprite;
+
 	inline function get_controls():Controls
 		return PlayerSettings.player1.controls;
 
@@ -46,7 +56,19 @@ class MusicBeatState extends FlxUIState
 		if (transIn != null)
 			trace('reg ' + transIn.region);
 
+		var daPlayState = new PlayState();
+
+		darkenBG = new FlxSprite().makeGraphic(FlxG.width * 10, FlxG.height * 10, FlxColor.BLACK);
+		darkenBG.alpha = 0.2;
+		darkenBG.antialiasing = true;
+		darkenBG.scrollFactor.set(0, 0);
+		darkenBG.screenCenter();
+		insert(members.length + 1, darkenBG);
+
 		super.create();
+
+		FlxTransitionableState.skipNextTransIn = false;
+		FlxTransitionableState.skipNextTransOut = false;
 	}
 
 	var coolElapsed:Float = 0;
@@ -56,6 +78,8 @@ class MusicBeatState extends FlxUIState
 		// everyStep();
 		Conductor.offsetPos = Conductor.songPosition - Conductor.offset;
 		var oldStep:Int = curStep;
+
+		// FlxG.debugger.visible = false;
 
 		updateCurStep();
 		updateBeat();
@@ -163,6 +187,38 @@ class MusicBeatState extends FlxUIState
 		}
 
 		curStep = lastChange.stepTime + Math.floor((Conductor.songPosition - lastChange.songTime) / Conductor.stepCrochet);
+	}
+
+	public function switchState(target:FlxState, stopMusic = false, transIn:Bool = true):Void
+	{
+		/*var transCamera:FlxCamera = new FlxCamera();
+		transCamera.antialiasing = true;
+		transCamera.bgColor.alpha = 0;
+		FlxG.cameras.add(transCamera);
+		
+		for (i in 0...3)
+		{
+			var transSprite:FlxSprite = new FlxSprite(FlxG.width).loadGraphic(Paths.image('transition'));
+			transSprite.alpha = 0.33333333333 * (i + 1);
+			if (i == 0)
+				transSprite.scale.set(1.6, 1.6);
+			else
+				transSprite.scale.set(1.5, 1.5);
+			transSprite.cameras = [transCamera];
+			add(transSprite);
+			FlxTween.tween(transSprite, {x: 0 + (70 * (i + 1))}, 0.8 - (0.2 * i), {ease: FlxEase.quadOut});
+		}*/
+
+		/*new FlxTimer().start(0.9, function(tmr:FlxTimer)
+		{*/
+			FlxTransitionableState.skipNextTransIn = true;
+			FlxTransitionableState.skipNextTransOut = true;
+
+			// wasTransIn = true;
+
+			LoadingState.loadAndSwitchState(target, stopMusic);
+			// FlxG.cameras.remove(transCamera);
+		// });
 	}
 
 	public function fakeUpdate(elapsed:Float):Void

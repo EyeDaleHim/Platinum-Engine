@@ -21,7 +21,9 @@ class Alphabet extends FlxSpriteGroup
 
 	// for menu shit
 	public var targetY:Float = 0;
+	public var positionY:Float = 0;
 	public var isMenuItem:Bool = false;
+	public var actPositionMenu:Bool = false;
 
 	public var text:String = "";
 	public var selected:Bool = false;
@@ -187,13 +189,13 @@ class Alphabet extends FlxSpriteGroup
 					letter.createBold(splitWords[loopNum]);
 
 					/*
-					if (isNumber)
-						letter.createBoldNumber(splitWords[loopNum]);
-					else if (isSymbol)
-						letter.createBoldSymbol(splitWords[loopNum]);
-					else
-						letter.createBold(splitWords[loopNum]);
-					*/
+						if (isNumber)
+							letter.createBoldNumber(splitWords[loopNum]);
+						else if (isSymbol)
+							letter.createBoldSymbol(splitWords[loopNum]);
+						else
+							letter.createBold(splitWords[loopNum]);
+					 */
 				}
 				else
 				{
@@ -241,17 +243,20 @@ class Alphabet extends FlxSpriteGroup
 
 		if (isMenuItem)
 		{
-			if (!fade)
+			if (actPositionMenu)
 			{
-				var scaledY = FlxMath.remapToRange(targetY, 0, 1, 0, 1.3);
+				if (!fade)
+				{
+					var scaledY = FlxMath.remapToRange(targetY, 0, 1, 0, 1.3);
 
-				y = FlxMath.lerp(y, (scaledY * 120) + (FlxG.height * 0.48), 0.16 * (60 / Main.framerate));
-				x = FlxMath.lerp(x, (targetY * 20) + 90 + coolThing /*(FlxG.width * 0.5) - (length * 20) - 95*/, 0.16 * (60 / Main.framerate));
-			}
-			else
-			{
-				x = FlxMath.lerp(x, -FlxG.width + (FlxG.width / 6), 0.2);
-				alpha -= 0.079;
+					y = FlxMath.lerp(y, (scaledY * 120) + (FlxG.height * 0.48), 0.16 * (60 / Main.framerate));
+					x = FlxMath.lerp(x, (targetY * 20) + 90 + coolThing /*(FlxG.width * 0.5) - (length * 20) - 95*/, 0.16 * (60 / Main.framerate));
+				}
+				else
+				{
+					x = FlxMath.lerp(x, -FlxG.width + (FlxG.width / 6), 0.2);
+					alpha -= 0.079;
+				}
 			}
 		}
 

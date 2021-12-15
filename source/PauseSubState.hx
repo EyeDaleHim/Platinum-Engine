@@ -81,15 +81,24 @@ class PauseSubState extends MusicBeatSubstate
 				renameSong = 'Dad Battle';
 			case 'philly':
 				renameSong = 'Philly Nice';
+			case 'restless-dreams':
+				renameSong = 'Restless Dreams';
+			case 'stages-of-grief':
+				renameSong = 'Stages of Grief';
 			default:
 				wasRenamed = false;
 		}
+
 		if (!wasRenamed)
-			levelInfo.text += PlayState.SONG.song;
+		{
+			levelInfo.text = PlayState.SONG.song.charAt(0).toUpperCase();
+			// levelInfo.text += PlayState.SONG.song;
+			levelInfo.text += PlayState.SONG.song.substring(1, PlayState.SONG.song.length);
+		}
 		else
 			levelInfo.text += renameSong;
 		levelInfo.scrollFactor.set();
-		
+
 		levelInfo.setFormat(GameData.globalFont, 32);
 		levelInfo.updateHitbox();
 		add(levelInfo);
@@ -119,6 +128,7 @@ class PauseSubState extends MusicBeatSubstate
 			var songText:Alphabet = new Alphabet(0, (70 * i) + 30, menuItems[i], true, false);
 			songText.isMenuItem = true;
 			songText.targetY = i;
+			songText.actPositionMenu = true;
 			grpMenuShit.add(songText);
 		}
 
@@ -141,19 +151,22 @@ class PauseSubState extends MusicBeatSubstate
 	{
 		daSelected = menuItems[curSelected];
 
-		if ((FlxG.save.data.musicVolume / 100) < 0.5)
+		if (PlayState.isPaused)
 		{
-			if (pauseMusic.volume < 0.5)
-				pauseMusic.volume += 0.01 * elapsed;
-		}
-		else
-		{
-			if (pauseMusic.volume < (FlxG.save.data.musicVolume / 100))
-				pauseMusic.volume += 0.01 * elapsed;
-		}
+			if ((FlxG.save.data.musicVolume / 100) < 0.5)
+			{
+				if (pauseMusic.volume < 0.5)
+					pauseMusic.volume += 0.01 * elapsed;
+			}
+			else
+			{
+				if (pauseMusic.volume < (FlxG.save.data.musicVolume / 100))
+					pauseMusic.volume += 0.01 * elapsed;
+			}
 
-		if (pauseMusic.volume > FlxG.save.data.musicVolume / 100)
-			pauseMusic.volume = FlxG.save.data.musicVolume / 100;
+			if (pauseMusic.volume > FlxG.save.data.musicVolume / 100)
+				pauseMusic.volume = FlxG.save.data.musicVolume / 100;
+		}
 
 		super.update(elapsed);
 
@@ -267,6 +280,7 @@ class PauseSubState extends MusicBeatSubstate
 			{
 				case "Resume":
 					pauseMusic.volume = 0;
+					FlxG.sound.list.remove(pauseMusic);
 					PlayState.isPaused = false;
 					close();
 				case "Restart Song":
@@ -414,6 +428,7 @@ class PauseSubState extends MusicBeatSubstate
 			var songText:Alphabet = new Alphabet(0, (70 * i) + 30, menuItems[i], true, false);
 			songText.isMenuItem = true;
 			songText.targetY = i;
+			songText.actPositionMenu = true;
 			grpMenuShit.add(songText);
 		}
 		// call it twice to fix white text??

@@ -68,97 +68,107 @@ class Note extends FlxSprite
 		switch (daStage)
 		{
 			case 'school' | 'schoolEvil':
-				loadGraphic(Paths.image('weeb/pixelUI/arrows-pixels'), true, 17, 17);
-
-				animation.add('greenScroll', [6]);
-				animation.add('redScroll', [7]);
-				animation.add('blueScroll', [5]);
-				animation.add('purpleScroll', [4]);
-
-				if (isSustainNote)
 				{
-					loadGraphic(Paths.image('weeb/pixelUI/arrowEnds'), true, 7, 6);
+					loadGraphic(Paths.image('weeb/pixelUI/arrows-pixels'), true, 17, 17);
 
-					animation.add('purpleholdend', [4]);
-					animation.add('greenholdend', [6]);
-					animation.add('redholdend', [7]);
-					animation.add('blueholdend', [5]);
+					animation.add('greenScroll', [6]);
+					animation.add('redScroll', [7]);
+					animation.add('blueScroll', [5]);
+					animation.add('purpleScroll', [4]);
 
-					animation.add('purplehold', [0]);
-					animation.add('greenhold', [2]);
-					animation.add('redhold', [3]);
-					animation.add('bluehold', [1]);
+					if (isSustainNote)
+					{
+						loadGraphic(Paths.image('weeb/pixelUI/arrowEnds'), true, 7, 6);
+
+						animation.add('purpleholdend', [4]);
+						animation.add('greenholdend', [6]);
+						animation.add('redholdend', [7]);
+						animation.add('blueholdend', [5]);
+
+						animation.add('purplehold', [0]);
+						animation.add('greenhold', [2]);
+						animation.add('redhold', [3]);
+						animation.add('bluehold', [1]);
+					}
+
+					setGraphicSize(Std.int(width * PlayState.daPixelZoom));
+					updateHitbox();
 				}
 
-				setGraphicSize(Std.int(width * PlayState.daPixelZoom));
-				updateHitbox();
-
 			default:
-				switch (noteType)
 				{
-					case NORMAL:
-						frames = Paths.getSparrowAtlas('NOTE_assets');
+					switch (noteType)
+					{
+						case NORMAL:
+							{
+								frames = Paths.getSparrowAtlas('NOTE_assets');
 
-						animation.addByPrefix('greenScroll', 'green0');
-						animation.addByPrefix('redScroll', 'red0');
-						animation.addByPrefix('blueScroll', 'blue0');
-						animation.addByPrefix('purpleScroll', 'purple0');
+								animation.addByPrefix('greenScroll', 'green0');
+								animation.addByPrefix('redScroll', 'red0');
+								animation.addByPrefix('blueScroll', 'blue0');
+								animation.addByPrefix('purpleScroll', 'purple0');
 
-						animation.addByPrefix('purpleholdend', 'pruple end hold');
-						animation.addByPrefix('greenholdend', 'green hold end');
-						animation.addByPrefix('redholdend', 'red hold end');
-						animation.addByPrefix('blueholdend', 'blue hold end');
+								animation.addByPrefix('purpleholdend', 'pruple end hold');
+								animation.addByPrefix('greenholdend', 'green hold end');
+								animation.addByPrefix('redholdend', 'red hold end');
+								animation.addByPrefix('blueholdend', 'blue hold end');
 
-						animation.addByPrefix('purplehold', 'purple hold piece');
-						animation.addByPrefix('greenhold', 'green hold piece');
-						animation.addByPrefix('redhold', 'red hold piece');
-						animation.addByPrefix('bluehold', 'blue hold piece');
+								animation.addByPrefix('purplehold', 'purple hold piece');
+								animation.addByPrefix('greenhold', 'green hold piece');
+								animation.addByPrefix('redhold', 'red hold piece');
+								animation.addByPrefix('bluehold', 'blue hold piece');
 
-						setGraphicSize(Std.int(width * 0.7));
-						updateHitbox();
-						antialiasing = FlxG.save.data.antialiasing;
-					case SEAL:
-						frames = Paths.getSparrowAtlas('SEAL_assets');
+								setGraphicSize(Std.int(width * 0.7));
+								updateHitbox();
+								antialiasing = FlxG.save.data.antialiasing;
+							}
+						case SEAL:
+							{
+								frames = Paths.getSparrowAtlas('SEAL_assets');
 
-						animation.addByPrefix('greenScroll', 'green0');
-						animation.addByPrefix('redScroll', 'red0');
-						animation.addByPrefix('blueScroll', 'blue0');
-						animation.addByPrefix('purpleScroll', 'purple0');
+								animation.addByPrefix('greenScroll', 'green0');
+								animation.addByPrefix('redScroll', 'red0');
+								animation.addByPrefix('blueScroll', 'blue0');
+								animation.addByPrefix('purpleScroll', 'purple0');
 
-						animation.addByPrefix('purpleholdend', 'pruple end hold');
-						animation.addByPrefix('greenholdend', 'green hold end');
-						animation.addByPrefix('redholdend', 'red hold end');
-						animation.addByPrefix('blueholdend', 'blue hold end');
+								animation.addByPrefix('purpleholdend', 'pruple end hold');
+								animation.addByPrefix('greenholdend', 'green hold end');
+								animation.addByPrefix('redholdend', 'red hold end');
+								animation.addByPrefix('blueholdend', 'blue hold end');
 
-						animation.addByPrefix('purplehold', 'purple hold piece');
-						animation.addByPrefix('greenhold', 'green hold piece');
-						animation.addByPrefix('redhold', 'red hold piece');
-						animation.addByPrefix('bluehold', 'blue hold piece');
+								animation.addByPrefix('purplehold', 'purple hold piece');
+								animation.addByPrefix('greenhold', 'green hold piece');
+								animation.addByPrefix('redhold', 'red hold piece');
+								animation.addByPrefix('bluehold', 'blue hold piece');
 
-						setGraphicSize(Std.int(width * 0.7));
-						updateHitbox();
-						antialiasing = FlxG.save.data.antialiasing;
-					case HALO:
-						frames = Paths.getSparrowAtlas('HALO_assets');
+								setGraphicSize(Std.int(width * 0.7));
+								updateHitbox();
+								antialiasing = FlxG.save.data.antialiasing;
+							}
+						case HALO:
+							{
+								frames = Paths.getSparrowAtlas('HALO_assets');
 
-						animation.addByPrefix('greenScroll', 'green0');
-						animation.addByPrefix('redScroll', 'red0');
-						animation.addByPrefix('blueScroll', 'blue0');
-						animation.addByPrefix('purpleScroll', 'purple0');
+								animation.addByPrefix('greenScroll', 'green0');
+								animation.addByPrefix('redScroll', 'red0');
+								animation.addByPrefix('blueScroll', 'blue0');
+								animation.addByPrefix('purpleScroll', 'purple0');
 
-						animation.addByPrefix('purpleholdend', 'pruple end hold');
-						animation.addByPrefix('greenholdend', 'green hold end');
-						animation.addByPrefix('redholdend', 'red hold end');
-						animation.addByPrefix('blueholdend', 'blue hold end');
+								animation.addByPrefix('purpleholdend', 'pruple end hold');
+								animation.addByPrefix('greenholdend', 'green hold end');
+								animation.addByPrefix('redholdend', 'red hold end');
+								animation.addByPrefix('blueholdend', 'blue hold end');
 
-						animation.addByPrefix('purplehold', 'purple hold piece');
-						animation.addByPrefix('greenhold', 'green hold piece');
-						animation.addByPrefix('redhold', 'red hold piece');
-						animation.addByPrefix('bluehold', 'blue hold piece');
+								animation.addByPrefix('purplehold', 'purple hold piece');
+								animation.addByPrefix('greenhold', 'green hold piece');
+								animation.addByPrefix('redhold', 'red hold piece');
+								animation.addByPrefix('bluehold', 'blue hold piece');
 
-						setGraphicSize(Std.int(width * 0.7));
-						updateHitbox();
-						antialiasing = FlxG.save.data.antialiasing;
+								setGraphicSize(Std.int(width * 0.7));
+								updateHitbox();
+								antialiasing = FlxG.save.data.antialiasing;
+							}
+					}
 				}
 		}
 
@@ -208,6 +218,24 @@ class Note extends FlxSprite
 					animation.play('purpleholdend');
 			}
 
+			if (prevNote.animation.curAnim != null)
+			{
+				if (prevNote.animation.curAnim.name.endsWith('end'))
+				{
+					if (!FlxG.save.data.downscroll)
+						prevNote.offset.y -= 140;
+					else
+						prevNote.offset.y += 140;
+				}
+				else if (prevNote.animation.curAnim.name.endsWith('hold'))
+				{
+					if (!FlxG.save.data.downscroll)
+						prevNote.offset.y += 10;
+					else
+						prevNote.offset.y -= 10;
+				}
+			}
+
 			updateHitbox();
 
 			x -= width / 2;
@@ -232,26 +260,23 @@ class Note extends FlxSprite
 					}
 				}
 
-				var stepHeight = (((0.45 * Conductor.stepCrochet)) * FlxMath.roundDecimal(PlayState.SONG.speed, 2));
-
-				formerHeight = prevNote.scale.y;
-
-				flipY = FlxG.save.data.downscroll;
-
 				// i had to copy from kade engine cuz im tired
 				prevNote.updateHitbox();
 
-				prevNote.scale.y *= (stepHeight + 1.2 + songOffset) / prevNote.height;
+				// prevNote.scale.y *= (stepHeight + 1.2 + songOffset) / prevNote.height;
+
+				if (!FlxG.save.data.downscroll)
+					prevNote.scale.y *= (Conductor.stepCrochet / 100 * 1.33) + 0.9;
+				else
+					prevNote.scale.y *= Conductor.stepCrochet / 100 * 1.5;
+				prevNote.scale.y *= PlayState.SONG.speed;
+
+				if (PlayState.curStage.startsWith('school'))
+				{
+					prevNote.scale.y *= 1.19;
+				}
 
 				prevNote.updateHitbox();
-				if (FlxG.save.data.downscroll)
-					prevNote.noteYOff = Math.round(-prevNote.offset.y - 12);
-				else
-					prevNote.noteYOff = Math.round(-prevNote.offset.y + 12);
-
-				// prevNote.setGraphicSize();
-
-				noteYOff = Math.round(-offset.y);
 
 				/*// WHY GODDAMN IT!!!!
 					if (FlxG.save.data.downscroll)

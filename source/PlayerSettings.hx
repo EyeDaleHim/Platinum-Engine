@@ -142,7 +142,10 @@ class PlayerSettings
 
 	static public function setBindingsFromFile():Void
 	{
-		var keyTxt:String = Assets.getText('keyBind.txt');
+		var keyTxt:String = '';
+
+		if (Assets.exists('keyBind.txt'))
+			keyTxt = Assets.getText('keyBind.txt');
 
 		var defaultKeys:Array<FlxKey> = [FlxKey.A, FlxKey.S, FlxKey.W, FlxKey.D];
 		var keyOrder:Array<Control> = [LEFT, DOWN, UP, RIGHT];
@@ -150,7 +153,7 @@ class PlayerSettings
 		if (keyTxt.length <= 3)
 		{
 			keyTxt = '';
-			for (i in 0...defaultKeys.length)
+			for (i in keyTxt.length...defaultKeys.length)
 			{
 				keyTxt += defaultKeys[i].toString();
 			}

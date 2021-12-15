@@ -34,7 +34,7 @@
 
 	<!-- ___________________________ Platinum Engine ___________________________ -->
 	
-	<!--<define name="tester" if="windows" />-->
+	<!--<define name="tester" if="windows" /> -->
 
 	<!-- _____________________________ Path Settings ____________________________ -->
 
@@ -104,6 +104,7 @@
 	
 	<assets path='art/readme.txt' rename='do NOT readme.txt' />
 	<assets path='art/keyBind.txt' rename='keyBind.txt' />
+	<assets path='art/site.txt' rename='site.txt' />
 	<!-- <template path='mods' /> -->
 	
 	<assets path="CHANGELOG.md" rename='changelog.txt'/>

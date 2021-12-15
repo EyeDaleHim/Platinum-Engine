@@ -14,27 +14,30 @@ class GameData
 {
 	// GAME
 	// DISABLE IF YOU DON'T WANT GAMEJOLT FEATURES
-	public static var isGameJolt:Bool = false;
+	public static final isGameJolt:Bool = false;
 	// If you don't wanna have CPU elapsed and "Dev Build" name in debug
-	public static var debugStats:Bool = false;
+	public static final debugStats:Bool = false;
 	// Test Cutscenes even in Freeplay, only in debug mode. Set to false by default.
-	public static var ignoreDebugCutscenes:Bool = true;
+	public static final ignoreDebugCutscenes:Bool = true;
 	// The global font for the game, default is VCR.
-	public static var globalFont:String = Paths.font('funkin', 'otf');
+	public static final globalFont:String = Paths.font('funkin', 'otf');
+	// The global music for the game, default is freakyMenu.
+	public static final globalMusic:String = Paths.music('freakySilentMenu');
 
 	// TITLE SCREEN
 	// If the Engine's logo is enabled.
-	public static var platinumLogo:Bool = true;
+	public static final platinumLogo:Bool = false;
 	// What should be the name of your mod. Useful if you want different save datas.
-	public static var modName = "SilentHill";
+	public static final modName = "SilentHill";
+
 	// MAIN MENU
 	// Menu Directional for the Menu.
-	public static var menuStyle:MenuStyles = MenuStyles.MIDDLE;
+	public static final menuStyle:MenuStyles = MenuStyles.LEFT;
 	// Show the version?
-	public static var showVersion:Bool = true;
+	public static final showVersion:Bool = true;
 
 	// CHARACTERS
-	public static var charactersThatFloat:Array<String> = ['spirit']; // Self-explanatory, characcters that can float.
+	public static final charactersThatFloat:Array<String> = ['spirit']; // Self-explanatory, characcters that can float.
 
 	public static var options:Array<Dynamic>;
 
@@ -54,7 +57,10 @@ class GameData
 				[
 					'downscroll',
 					// too lazy to fix
-					['If notes should go from the bottom instead of the top.', 'If notes should go from the bottom instead of the top.'],
+					[
+						'If notes should go from the bottom instead of the top.',
+						'If notes should go from the bottom instead of the top.'
+					],
 					FlxG.save.data.downscroll,
 					[false, true],
 					false,
@@ -63,7 +69,10 @@ class GameData
 				],
 				[
 					'ghost tapping',
-					['If tapping without notes should give you a miss penalty.', 'If tapping without notes should give you a miss penalty.'],
+					[
+						'If tapping without notes should give you a miss penalty.',
+						'If tapping without notes should give you a miss penalty.'
+					],
 					FlxG.save.data.ghostTap,
 					[false, true],
 					false,
@@ -109,7 +118,11 @@ class GameData
 				['graphics options', [''], null, null, null],
 				[
 					'video quality',
-					['Set the quality of the game, higher is better but more-performance heavy.', 'Set the quality of the game, higher is better but more-performance heavy.', 'Set the quality of the game, higher is better but more-performance heavy.'],
+					[
+						'Set the quality of the game, higher is better but more-performance heavy.',
+						'Set the quality of the game, higher is better but more-performance heavy.',
+						'Set the quality of the game, higher is better but more-performance heavy.'
+					],
 					FlxG.save.data.quality,
 					['low', 'medium', 'high'],
 					'high',
@@ -118,7 +131,10 @@ class GameData
 				],
 				[
 					'postprocessing effects',
-					['If postprocessing effects should appear.', 'If postprocessing effects should appear.'],
+					[
+						'If postprocessing effects should appear.',
+						'If postprocessing effects should appear.'
+					],
 					FlxG.save.data.vfxEffects,
 					[true, false],
 					true,
@@ -150,13 +166,29 @@ class GameData
 			],
 			[
 				['sounds options', '', null, null, null],
-				['music volume', ['Set the music volume.'], FlxG.save.data.musicVolume, 100, 100, 0, 'musicVolume'],
-				['sound volume', ['Set the sound volume.'], FlxG.save.data.soundVolume, 100, 100, 0, 'soundVolume'],
+				[
+					'music volume',
+					['Set the music volume.'],
+					FlxG.save.data.musicVolume,
+					FlxG.save.data.musicVolume,
+					100,
+					0,
+					'musicVolume'
+				],
+				[
+					'sound volume',
+					['Set the sound volume.'],
+					FlxG.save.data.soundVolume,
+					FlxG.save.data.soundVolume,
+					100,
+					0,
+					'soundVolume'
+				],
 				[
 					'vocals volume',
 					['Set the vocals volume.'],
 					FlxG.save.data.vocalsVolume,
-					100,
+					FlxG.save.data.vocalsVolume,
 					100,
 					0,
 					'vocalVolume'
@@ -168,49 +200,42 @@ class GameData
 	// FREEPLAY or STORY MODE
 	public static function getSongs(isStoryMode:Bool = true):Array<Dynamic>
 	{
-		if (isStoryMode)
-		{
-			// returns a week, for story mode.
-			var week:Array<Dynamic> = [];
+		// returns a week, for story mode.
+		var week:Array<Dynamic> = [];
 
-			var weekData:Array<Array<String>> = [
-				['Tutorial'],
-				['Bopeebo', 'Fresh', 'Dadbattle'],
-				['Spookeez', 'South', "Monster"],
-				['Pico', 'Philly', "Blammed"],
-				['Satin-Panties', "High", "Milf"],
-				['Cocoa', 'Eggnog', 'Winter-Horrorland'],
-				['Senpai', 'Roses', 'Thorns']
-			];
+		var weekData:Array<Array<String>> = [
+			['Tutorial'],
+			['Bopeebo', 'Fresh', 'Dadbattle'],
+			['Spookeez', 'South', "Monster"],
+			['Pico', 'Philly', "Blammed"],
+			['Satin-Panties', "High", "Milf"],
+			['Cocoa', 'Eggnog', 'Winter-Horrorland'],
+			['Senpai', 'Roses', 'Thorns']
+		];
 
-			var weekCharacters:Array<Dynamic> = [
-				['dad', 'bf', 'gf'],
-				['dad', 'bf', 'gf'],
-				['spooky', 'bf', 'gf'],
-				['pico', 'bf', 'gf'],
-				['mom', 'bf', 'gf'],
-				['parents-christmas', 'bf', 'gf'],
-				['senpai', 'bf', 'gf']
-			];
+		var weekCharacters:Array<Dynamic> = [
+			['dad', 'bf', 'gf'],
+			['dad', 'bf', 'gf'],
+			['spooky', 'bf', 'gf'],
+			['pico', 'bf', 'gf'],
+			['mom', 'bf', 'gf'],
+			['parents-christmas', 'bf', 'gf'],
+			['senpai', 'bf', 'gf']
+		];
 
-			var weekNames = [
-				"",
-				"Daddy Dearest",
-				"Spooky Month",
-				"PICO",
-				"MOMMY MUST MURDER",
-				"RED SNOW",
-				"hating simulator ft. moawling"
-			];
+		var weekNames = [
+			"",
+			"Daddy Dearest",
+			"Spooky Month",
+			"PICO",
+			"MOMMY MUST MURDER",
+			"RED SNOW",
+			"hating simulator ft. moawling"
+		];
 
-			week = [weekData, weekCharacters, weekNames];
+		week = [weekData, weekCharacters, weekNames];
 
-			return week;
-		}
-		else
-		{
-		}
-		return [];
+		return week;
 	}
 
 	// bruh???

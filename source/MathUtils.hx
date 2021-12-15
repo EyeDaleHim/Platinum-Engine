@@ -1,10 +1,9 @@
 package;
 
-enum LerpTypes
-{
-	LINEAR;
-	EXTRAPOLATION;
-}
+import flixel.util.typeLimit.OneOfTwo;
+
+// basically float or int
+typedef Number = OneOfTwo<Int, Float>;
 
 class MathUtils
 {
@@ -22,57 +21,6 @@ class MathUtils
 		num = num * Math.pow(10, precision);
 		num = Math.round(num) / Math.pow(10, precision);
 		return num;
-	}
-
-	public static function lerp(a:Float, b:Float, ratio:Float, type:LerpTypes):Float
-	{
-		switch (type)
-		{
-			case LerpTypes.LINEAR:
-				// Normal Lerping
-				return a + ratio * (b - a);
-			case LerpTypes.EXTRAPOLATION:
-				// IDFK  THE FORMULA OK, just broken for now
-				return ((a * 1) + (b - (b * 1)) / (b * 2) - ((b * 1) * (a * 2)) - (a * 1)) * ratio;
-		}
-
-		return a;
-	}
-
-	public static function lcd(a:Float, b:Float):Int
-	{
-		var absA = Math.abs(a);
-		var absB = Math.abs(b);
-		var highNum = Math.max(absA, absB);
-		var lowNum = Math.min(absA, absB);
-		var lcm = lowNum;
-		while (lcm % lowNum != 0)
-		{
-			lcm += highNum;
-		}
-		return Std.int(lcm);
-	}
-
-	public static function isPrime(num:Float):Bool
-	{
-		var i:Int = 2;
-		var daBool:Bool = false;
-
-		while (i <= num / 2)
-		{
-			if (num % i == 0)
-			{
-				daBool = true;
-				break;
-			}
-
-			i++;
-		}
-
-		if (!daBool)
-			return true;
-		else
-			return false;
 	}
 
 	public static function nearlyEquals(a:Float, b:Float, diff:Float):Bool

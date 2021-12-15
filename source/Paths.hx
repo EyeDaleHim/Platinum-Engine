@@ -22,7 +22,7 @@ class Paths
 	{
 		if (library != null)
 			return getLibraryPath(file, library);
-
+		
 		if (currentLevel != null)
 		{
 			var levelPath = getLibraryPathForce(file, currentLevel);
@@ -37,6 +37,12 @@ class Paths
 		return getPreloadPath(file);
 	}
 
+	/*static public function getImage(image:String, library:Null<String>)
+	{
+		
+		return FlxG.bitmap.get(image);
+	}*/
+	
 	static public function getLibraryPath(file:String, library = "preload")
 	{
 		return if (library == "preload" || library == "default") getPreloadPath(file); else getLibraryPathForce(file, library);
@@ -103,8 +109,13 @@ class Paths
 		return 'songs:assets/songs/${song.toLowerCase()}/Inst.$SOUND_EXT';
 	}
 
-	inline static public function image(key:String, ?library:String)
+	static public function image(key:String, ?library:String)
 	{
+		/*
+		if (FlxG.bitmap.get(key) == null)
+		{
+			FlxG.bitmap.add(getPath('images/$key.png', IMAGE, library));
+		}*/
 		return getPath('images/$key.png', IMAGE, library);
 	}
 

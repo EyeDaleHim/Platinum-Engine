@@ -82,19 +82,30 @@ class AnimationDebug extends FlxState
 		super.create();
 	}
 
+	var animSort:Map<String, Int> = new Map();
+
 	function genBoyOffsets(pushList:Bool = true):Void
 	{
 		var daLoop:Int = 0;
 
+		animSort.set('idle', 0);
+		animSort.set('singUP', 1);
+		animSort.set('singRIGHT', 2);
+		animSort.set('singLEFT', 3);
+		animSort.set('singDOWN', 4);
+
 		for (anim => offsets in char.animOffsets)
 		{
-			var text:FlxText = new FlxText(10, 20 + (18 * daLoop), 0, anim + ": " + offsets, 15);
-			text.scrollFactor.set();
-			text.color = FlxColor.BLUE;
-			dumbTexts.add(text);
-
-			if (pushList)
-				animList.push(anim);
+			if (daLoop == animSort.get(anim) || animSort.get(anim) == null)
+			{
+				var text:FlxText = new FlxText(10, 20 + (18 * daLoop), 0, anim + ": " + offsets, 15);
+				text.scrollFactor.set();
+				text.color = FlxColor.BLUE;
+				dumbTexts.add(text);
+	
+				if (pushList)
+					animList.push(anim);
+			}
 
 			daLoop++;
 		}

@@ -68,6 +68,7 @@ class ChartingState extends MusicBeatState
 	var dummyArrow:FlxSprite;
 
 	var curRenderedNotes:FlxTypedGroup<Note>;
+	var curRenderedSprite:FlxTypedGroup<FlxSprite>;
 	var curRenderedSustains:FlxTypedGroup<FlxSprite>;
 
 	var clickNotes:Bool = false;
@@ -123,6 +124,7 @@ class ChartingState extends MusicBeatState
 
 		curRenderedNotes = new FlxTypedGroup<Note>();
 		curRenderedSustains = new FlxTypedGroup<FlxSprite>();
+		curRenderedSprite = new FlxTypedGroup<FlxSprite>();
 
 		if (PlayState.SONG != null)
 		{
@@ -198,6 +200,7 @@ class ChartingState extends MusicBeatState
 		addSectionUI();
 		addNoteUI();
 
+		add(curRenderedSprite);
 		add(curRenderedNotes);
 		add(curRenderedSustains);
 
@@ -531,6 +534,8 @@ class ChartingState extends MusicBeatState
 			else
 				selectedType++;
 		}
+
+		
 
 		curRenderedNotes.forEach(function(spr:FlxSprite)
 		{
@@ -941,6 +946,11 @@ class ChartingState extends MusicBeatState
 			curRenderedSustains.remove(curRenderedSustains.members[0], true);
 		}
 
+		while (curRenderedSprite.members.length > 0)
+		{
+			curRenderedSprite.remove(curRenderedSprite.members[0], true);
+		}
+
 		var sectionInfo:Array<Dynamic> = _song.notes[curSection].sectionNotes;
 
 		if (_song.notes[curSection].changeBPM && _song.notes[curSection].bpm > 0)
@@ -979,6 +989,8 @@ class ChartingState extends MusicBeatState
 			var daSus = i[2];
 			var daType = i[3];
 
+			var color:Array<FlxColor> = [FlxColor.PURPLE, FlxColor.BLUE, FlxColor.GREEN, FlxColor.RED];
+
 			var note:Note = new Note(daStrumTime, daNoteInfo % 4, daType);
 			note.sustainLength = daSus;
 			note.setGraphicSize(GRID_SIZE, GRID_SIZE);
@@ -986,6 +998,11 @@ class ChartingState extends MusicBeatState
 			note.x = Math.floor(daNoteInfo * GRID_SIZE);
 			note.y = Math.floor(getYfromStrum((daStrumTime - sectionStartTime()) % (Conductor.stepCrochet * _song.notes[curSection].lengthInSteps)));
 
+			var noteSprite:FlxSprite = new FlxSprite(note.x, note.y).makeGraphic(GRID_SIZE, GRID_SIZE);
+			noteSprite.color = color[note.noteData];
+			noteSprite.updateHitbox();
+
+			curRenderedSprite.add(noteSprite);
 			curRenderedNotes.add(note);
 
 			if (daSus > 0)

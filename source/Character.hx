@@ -20,6 +20,8 @@ class Character extends FlxSprite
 	public var holdTimer:Float = 0;
 	public var lockedY:Float = 0;
 
+	var failedCharacter:Bool = false; // Trigger only if the character is unknown.
+
 	/*
 	 * the countFrames() function is fairly easy to use, so for example, you want to use an indice frames that starts
 	 * from 15 to 28, then you must do "countFrames(15, 28)";
@@ -522,12 +524,59 @@ class Character extends FlxSprite
 				playAnim('idle');
 
 				antialiasing = FlxG.save.data.antialiasing;
+			case 'james':
+				frames = Paths.getSparrowAtlas('james_sunderland');
+
+				animation.addByPrefix('idle', 'Idle', 24, false);
+				animation.addByPrefix('singUP', 'Up', 24, false);
+				animation.addByPrefix('singDOWN', 'Down', 24, false);
+				animation.addByPrefix('singLEFT', 'Left', 24, false);
+				animation.addByPrefix('singRIGHT', 'Right', 24, false);
+
+				addOffset('idle');
+				addOffset("singUP", 15, 39);
+				addOffset("singRIGHT", -11, -17);
+				addOffset("singLEFT", 103, 4);
+				addOffset("singDOWN", -3, -5);
+
+				playAnim('idle');
+
+				antialiasing = FlxG.save.data.antialiasing;
 		}
 
 		if (GameData.charactersThatFloat.contains(character))
 		{
 			y -= 120;
 			FlxTween.tween(this, {y: y + 120}, 2, {ease: FlxEase.quadOut, type: PINGPONG});
+		}
+
+		if (animation.curAnim == null)
+		{
+			failedCharacter = true;
+
+			frames = null;
+			animOffsets = null;
+			animOffsets = new Map<String, Array<Dynamic>>();
+
+			tex = Paths.getSparrowAtlas('DADDY_DEAREST');
+			frames = tex;
+
+			animation.destroyAnimations();
+			
+			animation.addByPrefix('idle', 'Dad idle dance', 24);
+			animation.addByPrefix('singUP', 'Dad Sing Note UP', 24);
+			animation.addByPrefix('singRIGHT', 'Dad Sing Note RIGHT', 24);
+			animation.addByPrefix('singDOWN', 'Dad Sing Note DOWN', 24);
+			animation.addByPrefix('singLEFT', 'Dad Sing Note LEFT', 24);
+
+			addOffset('idle');
+			addOffset("singUP", -6, 50);
+			addOffset("singRIGHT", 0, 27);
+			addOffset("singLEFT", -10, 10);
+			addOffset("singDOWN", 0, -30);
+
+			playAnim('idle');
+			antialiasing = FlxG.save.data.antialiasing;
 		}
 
 		dance();
@@ -553,6 +602,9 @@ class Character extends FlxSprite
 				}
 			}
 		}
+
+		if (failedCharacter)
+			flipX = false;
 	}
 
 	override function update(elapsed:Float)
@@ -568,8 +620,10 @@ class Character extends FlxSprite
 		}
 		else
 		{
-			animation.curAnim.frameRate = 24;
+			if (animation.curAnim != null)
+				animation.curAnim.frameRate = 24;
 		}
+
 		if (!curCharacter.startsWith('bf'))
 		{
 			if (animation.curAnim != null)
@@ -700,8 +754,8 @@ class Character extends FlxSprite
 		{
 			animation.play(AnimName, Force, Reversed, Frame);
 			/* where is hamilton source code :(
-			if (!Force)
-				FlxTween.tween(this, {y: lockedY + 75}, 0.4, {ease: FlxEase.quadOut, type: BACKWARD});*/
+				if (!Force)
+					FlxTween.tween(this, {y: lockedY + 75}, 0.4, {ease: FlxEase.quadOut, type: BACKWARD}); */
 		}
 
 		var daOffset = animOffsets.get(AnimName);

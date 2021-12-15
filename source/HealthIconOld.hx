@@ -42,6 +42,8 @@ class HealthIconOld extends FlxSprite
 		animation.add('monster-christmas', [19, 20], 0, false, isPlayer);
 		animation.add('scared-bf', [24, 24], 0, false, isPlayer);
 		animation.add('gf-cheer', [26], 0, false, isPlayer);
+		animation.add('james', [27, 28], 0, false, isPlayer);
+		animation.add('pyramid', [29], 0, false, isPlayer);
 		animation.play(char);
 		scrollFactor.set();
 	}

@@ -30,7 +30,7 @@ class Conductor
 
 	public function new()
 	{
-		throw 'Cannot instantiate Conductor.hx!';
+		throw 'Cannot instantiate Conductor!';
 	}
 
 	public static function mapBPMChanges(song:SwagSong)

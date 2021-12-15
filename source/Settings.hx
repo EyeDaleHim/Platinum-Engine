@@ -154,8 +154,6 @@ class Settings
 
 	public static function oldSave(setting:Dynamic, target:String, ?keyBind:String = ''):Void
 	{
-		// make sure setting is the right type as target or we face issues :(
-
 		var coolBool:Bool = false;
 		var coolString:String = '';
 		var coolFloat:Float = 0;

@@ -36,41 +36,50 @@ class SettingsMenu extends MusicBeatState
 
 	override function create()
 	{
-		menuBG = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
-		menuBG.color = 0xFFea71fd;
-		menuBG.setGraphicSize(Std.int(menuBG.width * 1.1));
-		menuBG.updateHitbox();
-		menuBG.screenCenter();
-		menuBG.antialiasing = true;
-		add(menuBG);
-
-		grpItems = new FlxTypedGroup<Alphabet>();
-		add(grpItems);
-
-		var bottomBG:FlxSprite = new FlxSprite(0, FlxG.height * 0.9).makeGraphic(Std.int(FlxG.width), Std.int(FlxG.height * 0.04), FlxColor.BLACK);
-		bottomBG.alpha = 0.6;
-		bottomBG.antialiasing = true;
-		bottomBG.y = FlxG.height - bottomBG.height;
-		add(bottomBG);
-
-		dumbBitch = new FlxText(4, bottomBG.y, FlxG.width, "", Std.int(bottomBG.height - 2));
-		dumbBitch.setFormat(GameData.globalFont, Std.int(bottomBG.height - 2), FlxColor.WHITE, FlxTextAlign.LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-		add(dumbBitch);
-
-		valueText = new FlxText(FlxG.width * 0.8, dumbBitch.y - 36, 0, 32);
-		valueText.setFormat(GameData.globalFont, 32, FlxColor.WHITE, FlxTextAlign.LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-
-		for (i in 0...curOptions.length)
+		try
 		{
-			var songText:Alphabet = new Alphabet(0, (70 * i) + 30, curOptions[i][0], true, false);
-			songText.isMenuItem = true;
-			songText.targetY = i;
-			grpItems.add(songText);
+			menuBG = new FlxSprite().loadGraphic(Paths.image('menuBGGreen-SH'));
+			// menuBG.color = 0xFFea71fd;
+			menuBG.setGraphicSize(Std.int(menuBG.width * 1.1));
+			menuBG.updateHitbox();
+			menuBG.screenCenter();
+			menuBG.antialiasing = true;
+			add(menuBG);
+
+			grpItems = new FlxTypedGroup<Alphabet>();
+			add(grpItems);
+
+			var bottomBG:FlxSprite = new FlxSprite(0, FlxG.height * 0.9).makeGraphic(Std.int(FlxG.width), Std.int(FlxG.height * 0.04), FlxColor.BLACK);
+			bottomBG.alpha = 0.6;
+			bottomBG.antialiasing = true;
+			bottomBG.y = FlxG.height - bottomBG.height;
+			add(bottomBG);
+
+			dumbBitch = new FlxText(4, bottomBG.y, FlxG.width, "", Std.int(bottomBG.height - 2));
+			dumbBitch.setFormat(GameData.globalFont, Std.int(bottomBG.height - 2), FlxColor.WHITE, FlxTextAlign.LEFT, FlxTextBorderStyle.OUTLINE,
+				FlxColor.BLACK);
+			add(dumbBitch);
+
+			valueText = new FlxText(FlxG.width * 0.8, dumbBitch.y - 36, 0, 32);
+			valueText.setFormat(GameData.globalFont, 32, FlxColor.WHITE, FlxTextAlign.LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+
+			for (i in 0...curOptions.length)
+			{
+				var songText:Alphabet = new Alphabet(0, (70 * i) + 30, curOptions[i][0], true, false);
+				songText.isMenuItem = true;
+				songText.targetY = i;
+				songText.actPositionMenu = true;
+				grpItems.add(songText);
+			}
+
+			add(valueText);
+
+			changeSelection();
 		}
-
-		add(valueText);
-
-		changeSelection();
+		catch (e)
+		{
+			trace(e.message);
+		}
 
 		super.create();
 	}
@@ -140,7 +149,7 @@ class SettingsMenu extends MusicBeatState
 
 		if (curCategory != 0)
 		{
-			if (curOptions[curSelected][3][curSelectedValue - 1] != null /* || curSelectedValue != 0 || (curSelectedValue == 1 || curSelectedValue >= 1)*/)
+			if (curOptions[curSelected][3][curSelectedValue - 1] != null)
 				textString += '< ';
 		}
 
@@ -177,6 +186,9 @@ class SettingsMenu extends MusicBeatState
 
 	function changeItem(back:Bool):Void
 	{
+		if (curCategory == 0)
+			return;
+
 		if (curSelectedValue >= curOptions[curSelected][3].length - 1)
 			curSelectedValue = 0;
 		else if (curSelectedValue < 0 || curSelectedValue == -1)
@@ -192,29 +204,12 @@ class SettingsMenu extends MusicBeatState
 		if (curSelectedValue == -1)
 			curOptions[curSelected][3].length - 1;
 
-		var a = curOptions[curSelected][3];
-		var b = curOptions[curSelected][3].length - 1;
-		var c = curOptions[curSelected][3].length;
-
-		trace('$curSelectedValue, $a, $b, $c');
-
 		// prevent soft-lock crashes
 		var looped:Int = 0;
 
 		while (curOptions[curSelected][3][curSelectedValue] == null)
 		{
 			looped++;
-
-			/*
-				if (curSelectedValue > curOptions[curSelected][3].length - 1)
-					curSelectedValue = 0;
-				else
-				{
-					if (curOptions[curSelected][3][curSelectedValue + 1] != null)
-						curSelectedValue++;
-					else
-						curSelectedValue--;
-			}*/
 
 			curOptions[curSelected][2] = curOptions[curSelected][3][curSelectedValue];
 
@@ -240,6 +235,7 @@ class SettingsMenu extends MusicBeatState
 			var songText:Alphabet = new Alphabet(0, (70 * i) + 30, curOptions[i][0], true, false);
 			songText.isMenuItem = true;
 			songText.targetY = i;
+			songText.actPositionMenu = true;
 			grpItems.add(songText);
 		}
 
@@ -253,9 +249,9 @@ class SettingsMenu extends MusicBeatState
 		if (curSelected != 0)
 		{
 			if (FlxG.save.data.soundVolume > 0.4)
-				FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
+				FlxG.sound.play(Paths.sound('scrollMenu_SH'), 0.4);
 			else
-				FlxG.sound.play(Paths.sound('scrollMenu'), FlxG.save.data.soundVolume);
+				FlxG.sound.play(Paths.sound('scrollMenu_SH'), FlxG.save.data.soundVolume);
 		}
 
 		curSelected += change;

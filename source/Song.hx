@@ -1,7 +1,9 @@
 package;
 
+import flixel.FlxG;
 import Section.SwagSection;
 import haxe.Json;
+import haxe.Http;
 import haxe.format.JsonParser;
 import lime.utils.Assets;
 
@@ -67,6 +69,47 @@ class Song
 				daNotes = songData.notes;
 				daSong = songData.song;
 				daBpm = songData.bpm; */
+
+		return parseJSONshit(rawJson);
+	}
+
+	public static function loadFromHttp(http:String)
+	{
+		var rawJson = '';
+		
+		var data = new Http(http);
+
+		data.onData = function(data:String)
+		{
+			rawJson = data;
+			trace(data);
+		}
+
+		data.onError = function(error)
+		{
+			FlxG.log.error('ERROR! Could not load from site: ' + error);
+			trace('ERROR! Could not load from site: ' + error);
+			return parseJSONshit(Assets.getText(Paths.json('tutorial'.toLowerCase() + '/' + 'tutorial'.toLowerCase())).trim());
+		}
+
+		data.request();
+
+		var looped:Int = 0;
+
+		// trace(rawJson.indexOf('Spookeez'));
+		
+		while (!rawJson.endsWith("}"))
+		{
+			rawJson = rawJson.substr(0, rawJson.length - 1);
+			// LOL GOING THROUGH THE BULLSHIT TO CLEAN IDK WHATS STRANGE
+			looped++;
+
+			if (looped >= 1500)
+			{
+				looped = 0;
+				break;
+			}
+		}
 
 		return parseJSONshit(rawJson);
 	}
